@@ -35,11 +35,5 @@ const smartSprite = async (source, dest, retina = false) => {
     return Promise.all(promises);
 };
 
-/*sprite('imgs').then((list) => {
-    console.log(list);
-    let style = generateStyle(resolve(cwd, 'out.png'), list);
-    console.log(style);
-}, console.log.bind(console, 'Err:'));*/
-
 export default sprite;
 export { generateStyle, mergeImage, smartSprite };

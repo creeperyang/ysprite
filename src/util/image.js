@@ -25,7 +25,6 @@ const createImage = (width, height, color = transparent) => {
 };
 
 const appendImage = (batch, left, top, width, height, image) => {
-    console.log('appendImage', left, top, width, height, image.width(), image.height());
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
             batch.setPixel(left + x, top + y, image.getPixel(x, y));
@@ -70,7 +69,6 @@ const mergeImage = async (sourceImgPaths, mergedImgPath, arrange = 'smart', marg
     rects.reduce((preBatch, { pack: { x, y }, width, height, image}) => {
         return appendImage(preBatch, x, y, width, height, image);
     }, batch);
-    console.log('---------------', mergedImgPath)
     await writeImage(batch, mergedImgPath, 'png', {
         compression: 'high',
         interlaced: true,

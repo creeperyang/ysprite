@@ -34,7 +34,9 @@ smartSprite(options.source, options.output, options.retina).then((data) => {
     
     if (!options.style) return;
     logOk('start generate style');
-    return generateStyle(options.output, options.stylePath, data[0], true);
+    return generateStyle(options.output, options.stylePath, data[0], true, {
+        retina: options.retina
+    });
 }, (err) => {
     logErr('failed generate sprite');
 }).then((data) => {
