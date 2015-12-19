@@ -95,7 +95,7 @@ const mergeImage = async (sourceImgPaths, mergedImgPath, arrange = 'smart', marg
     let pack = new Packer().pack(Packer.sort(rects, 'maxSide'));
     let mergedImage = await createImage(pack.width, pack.height);
     let batch = mergedImage.batch();
-    rects.reduce((preBatch, { pack: { x, y }, width, height, image}) => {
+    rects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
         return appendImage(preBatch, image, x, y, width, height);
     }, batch);
     await writeImage(batch, mergedImgPath, 'png', {
@@ -103,7 +103,7 @@ const mergeImage = async (sourceImgPaths, mergedImgPath, arrange = 'smart', marg
         interlaced: true,
         transparency: true
     });
-    return rects.map(({ pack: { x, y }, width, height, image}) => {
+    return rects.map(({ pack: { x, y }, width, height, image }) => {
         return { x, y, width, height, path: image.filepath };
     });
 };

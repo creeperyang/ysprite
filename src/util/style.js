@@ -13,7 +13,7 @@ const genrateStyle = async (imagePath, stylePath, infoList, writeToFile = true, 
         newLine}    background-repeat: no-repeat;${
         newLine}    background-image: url(${relativePath});`;
     style += retinaCSS ? `\n    ${retinaCSS}\n}` : '\n}';
-    infoList.forEach(({x, y, width, height, path}) => {
+    infoList.forEach(({ x, y, width, height, path }) => {
         let name = basename(path);
         let css = `.${prefix + connector + name.slice(0, name.lastIndexOf('.')) + suffix} {${
             newLine}    background-position: -${x}px -${y}px;${

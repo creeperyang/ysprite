@@ -5,7 +5,7 @@ class Packer {
      * @return {Object}       root container
      */
     pack(rects) {
-        if (!rects || !rects.length) return;
+        if (!rects || !rects.length) return false;
         if (rects[0]) {
             this.root = {
                 x: 0,
@@ -16,10 +16,9 @@ class Packer {
         }
         let container;
         rects.forEach((rect) => {
-            if (container = this.findContainer(this.root, rect.width,
-                    rect.height)) {
-                rect.pack = this.splitContainer(container, rect.width,
-                    rect.height);
+            container = this.findContainer(this.root, rect.width, rect.height);
+            if (container) {
+                rect.pack = this.splitContainer(container, rect.width, rect.height);
             } else {
                 rect.pack = this.expandContainer(rect.width, rect.height);
             }
@@ -48,8 +47,8 @@ class Packer {
                 break;
             case 'maxSide':
                 sorted = rects.sort((a, b) => {
-                    let bMax = b.width > b.height ? b.width : b.height;
-                    let aMax = a.width > a.height ? a.width : a.height;
+                    const bMax = b.width > b.height ? b.width : b.height;
+                    const aMax = a.width > a.height ? a.width : a.height;
                     return bMax - aMax;
                 });
                 break;
@@ -96,7 +95,7 @@ class Packer {
             x: container.x + width,
             y: container.y,
             width: container.width - width,
-            height: height
+            height
         };
         return container;
     }
@@ -108,13 +107,13 @@ class Packer {
      * @return {Object}        expanded container or undefined
      */
     expandContainer(width, height) {
-        let root = this.root;
-        let canGrowDown = width <= root.width;
-        let canGrowRight = height <= root.height;
+        const root = this.root;
+        const canGrowDown = width <= root.width;
+        const canGrowRight = height <= root.height;
         // attempt to keep square-ish
-        let shouldGrowRight = canGrowRight && root.height >= (root.width +
+        const shouldGrowRight = canGrowRight && root.height >= (root.width +
             width);
-        let shouldGrowDown = canGrowDown && root.width >= (root.height +
+        const shouldGrowDown = canGrowDown && root.width >= (root.height +
             height);
         return shouldGrowRight ? this.expandRight(width, height) :
             shouldGrowDown ? this.expandDown(width, height) :
@@ -129,7 +128,7 @@ class Packer {
      * @return {Object}        expanded container
      */
     expandRight(width, height) {
-        let root = this.root;
+        const root = this.root;
         // reset root, and set orginal root to down
         this.root = {
             x: 0,
@@ -141,11 +140,11 @@ class Packer {
             right: {
                 x: root.width,
                 y: 0,
-                width: width,
+                width,
                 height: root.height
             }
         };
-        let container = this.findContainer(this.root, width, height);
+        const container = this.findContainer(this.root, width, height);
         return container ? this.splitContainer(container, width, height) :
             undefined;
     }
@@ -157,7 +156,7 @@ class Packer {
      * @return {Object}        expanded container
      */
     expandDown(width, height) {
-        let root = this.root;
+        const root = this.root;
         // reset root, and set orginal root to right
         this.root = {
             x: 0,
@@ -170,10 +169,10 @@ class Packer {
                 x: 0,
                 y: root.height,
                 width: root.width,
-                height: height
+                height
             }
         };
-        let container = this.findContainer(this.root, width, height);
+        const container = this.findContainer(this.root, width, height);
         return container ? this.splitContainer(container, width, height) :
             undefined;
     }

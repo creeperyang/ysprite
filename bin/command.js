@@ -3,7 +3,7 @@ import colors from 'colors';
 
 const humanReadableArgName = (arg) => {
     let nameOutput = arg.name + (arg.variadic === true ? '...' : '');
-    return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']'
+    return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']';
 };
 
 const pad = (str, width) => {

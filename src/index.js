@@ -7,6 +7,7 @@ const cwd = process.cwd();
 const getAbsolutePath = (path) => isAbsolute(path) ? path : resolve(cwd, path);
 const retinaFilter = (filepath) => /@2x/.test(filepath);
 const antiRetinaFilter = (filepath) => !retinaFilter(filepath);
+
 /**
  * sprite
  * @param  {Array} sourceList list of source image path

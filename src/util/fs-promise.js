@@ -92,4 +92,4 @@ const mkdir = (dir) => {
     });
 };
 
-export { list, read, write, mkdir, exist, copy }
+export { list, read, write, mkdir, exist, copy };
