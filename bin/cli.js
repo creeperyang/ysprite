@@ -8,7 +8,7 @@ program
     .option('-o, --output <path>', 'set sprite image path, defaults to ./sprite.png')
     .option('-r, --retina', 'enable retina mode.')
     .option('--no-style', 'disable generate style')
-    .option('--style-path [path]', 'style path. defaults to ./sprite.css')
+    .option('--style-path <path>', 'style path. defaults to ./sprite.css')
     .parse(process.argv);
 
 const defaults = {
@@ -44,4 +44,3 @@ smartSprite(options.source, options.output, options.retina).then((data) => {
 }, (err) => {
     logErr('failed generate style');
 });
-

@@ -8,11 +8,13 @@
   },
   "scripts": {
     "test": "npm run lint && babel-node test/run.js",
+    "prepublish": "npm run build",
     "lint": "node_modules/.bin/eslint tools src bin test",
     "build": "babel-node --eval \"require('./tools/build.js').default().catch(console.log.bind(console))\""
   },
   "files": [
-    "src"
+    "src",
+    ".bin"
   ],
   "repository": {
     "type": "git",
