@@ -7,10 +7,13 @@
     "ysprite": ".bin/cli.js"
   },
   "scripts": {
-    "test": "babel-node test/run.js",
+    "test": "npm run lint && babel-node test/run.js",
     "lint": "node_modules/.bin/eslint tools src bin test",
     "build": "babel-node --eval \"require('./tools/build.js').default().catch(console.log.bind(console))\""
   },
+  "files": [
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/creeperyang/ysprite.git"
