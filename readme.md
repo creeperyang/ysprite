@@ -1,5 +1,7 @@
 # ysprite
 
+[![Build Status](https://travis-ci.org/creeperyang/ysprite.svg?branch=master)](https://travis-ci.org/creeperyang/ysprite)
+
 > A lightweight and powerful css sprite util.
 
 
@@ -38,7 +40,7 @@ ysprite --help
     -o, --output <path>  set sprite image path, defaults to ./sprite.png
     -r, --retina         enable retina mode.
     --no-style           disable generate style
-    --style-path [path]  style path. defaults to ./sprite.css
+    --style-path <path>  style path. defaults to ./sprite.css
 
 
 # do sprite
