@@ -10,7 +10,7 @@
 1. Support both command line and node module.
 2. Generate sprite and corresponding style automatically.
 3. Support retina.
-4. Write in ES2015.
+4. Write in `ES2015`.
 
 ## Installation & Usage
 
@@ -47,6 +47,14 @@ ysprite --help
 ysprite -s images/icons -o image/sprite.png -r --style-path css/sprite.css
 ```
 
+1. If you have a list of icons inside `images/icons` dir, both retina(`xx@2x.png`) and normal ones.
+2. run `ysprite -s images/icons -o image/sprite.png -r --style-path css/sprite.css`. 
+3. And then, you found both `sprite.png` and `sprite@2x.png` inside `image` dir. and `sprite.css` inside `css` dir.
+4. Lastly, just include `css/sprite.css` into you html file and use with special `className`.
+
+![demo](http://7sbnba.com1.z0.glb.clouddn.com/pic-sprite.jpg)
+
+
 ### Use as common node module
 
 It's better install locally.
@@ -61,14 +69,9 @@ And then, just `require` as other modules.
 import { generateStyle, smartSprite } from 'ysprite';
 ```
 
-**Note: `sprite` is wrote in `ES2015+`, so you may need `babel`.**
+**Note: `sprite` is wrote in `ES2015+`, so you need transform to `ES5` youself.**
 
 
 ## License
 
 MIT
-
-
-
-
-
