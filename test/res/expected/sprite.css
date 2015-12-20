@@ -1,0 +1,74 @@
+/**
+* Created at 2015-12-20 16:37:10.
+**/
+.icon {
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-image: url(sprite.png);
+    background-image: -webkit-image-set(url(sprite.png) 1x, url(sprite@2x.png) 2x);
+}
+.icon-play {
+    background-position: -0px -0px;
+    width: 75px;
+    height: 75px;
+}
+.icon-app {
+    background-position: -75px -0px;
+    width: 35px;
+    height: 35px;
+}
+.icon-game {
+    background-position: -75px -35px;
+    width: 35px;
+    height: 35px;
+}
+.icon-video {
+    background-position: -0px -75px;
+    width: 35px;
+    height: 35px;
+}
+.icon-search {
+    background-position: -35px -75px;
+    width: 22px;
+    height: 22px;
+}
+.icon-tip {
+    background-position: -57px -75px;
+    width: 21px;
+    height: 19px;
+}
+.icon-back {
+    background-position: -78px -75px;
+    width: 9px;
+    height: 17px;
+}
+.icon-next-double-disable {
+    background-position: -87px -75px;
+    width: 13px;
+    height: 13px;
+}
+.icon-next-double {
+    background-position: -35px -97px;
+    width: 13px;
+    height: 13px;
+}
+.icon-previous-double-disable {
+    background-position: -48px -97px;
+    width: 13px;
+    height: 13px;
+}
+.icon-previous-double {
+    background-position: -61px -97px;
+    width: 13px;
+    height: 13px;
+}
+.icon-more {
+    background-position: -100px -75px;
+    width: 6px;
+    height: 10px;
+}
+.icon-triangle-down {
+    background-position: -74px -97px;
+    width: 10px;
+    height: 6px;
+}

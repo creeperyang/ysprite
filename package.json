@@ -7,8 +7,8 @@
     "ysprite": ".bin/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/.bin/eslint tools src bin",
+    "test": "babel-node test/run.js",
+    "lint": "node_modules/.bin/eslint tools src bin test",
     "build": "babel-node --eval \"require('./tools/build.js').default().catch(console.log.bind(console))\""
   },
   "repository": {
@@ -44,6 +44,8 @@
     "babel-preset-stage-0": "^6.3.13",
     "eslint": "^1.10.3",
     "eslint-plugin-babel": "^3.0.0",
+    "jasmine": "^2.4.1",
+    "jasmine-spec-reporter": "^2.4.0",
     "webpack": "^1.12.9"
   }
 }
