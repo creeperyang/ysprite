@@ -2,7 +2,7 @@ class Packer {
     /**
      * pack rects list
      * @param  {Array} rects (sorted) rect list, like: [{width: 100, height: 100}, ...]
-     * @return {Object}       root container
+     * @return {Object}      pack info object, like: { x, y, width, height, right, down} (right/down is the same type object)
      */
     pack(rects) {
         if (!rects || !rects.length) return false;
@@ -14,14 +14,10 @@ class Packer {
                 height: rects[0].height
             };
         }
-        let container;
         rects.forEach((rect) => {
-            container = this.findContainer(this.root, rect.width, rect.height);
-            if (container) {
-                rect.pack = this.splitContainer(container, rect.width, rect.height);
-            } else {
-                rect.pack = this.expandContainer(rect.width, rect.height);
-            }
+            let container = this.findContainer(this.root, rect.width, rect.height);
+            rect.pack = container ? this.splitContainer(container, rect.width, rect.height) :
+                this.expandContainer(rect.width, rect.height);
         });
         return this.root;
     }
@@ -59,20 +55,20 @@ class Packer {
     }
 
     /**
-     * find (rect) container for current rect
-     * @param  {Object} root   root container
-     * @param  {Number} width  current rect's width
-     * @param  {Number} height current rect's height
-     * @return {Object}        node
+     * find unused container for current rect
+     * @param  {Object} container container to start find
+     * @param  {Number} width     current rect's width
+     * @param  {Number} height    current rect's height
+     * @return {Object}           appropriate container for current rect
      */
-    findContainer(root, width, height) {
+    findContainer(container, width, height) {
         // recursive find
-        if (root.used) {
-            return this.findContainer(root.right, width, height) || this.findContainer(
-                root.down, width, height);
-            // if rect can be placed into root container (big enough)
-        } else if (width <= root.width && height <= root.height) {
-            return root;
+        if (container.used) {
+            return this.findContainer(container.right, width, height) || this.findContainer(
+                container.down, width, height);
+            // if rect can be placed into container (big enough)
+        } else if (width <= container.width && height <= container.height) {
+            return container;
         }
     }
 
