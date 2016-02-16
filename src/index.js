@@ -40,6 +40,7 @@ const notInArray = (arr = []) => {
  *                                       margin {Number} margin between icons
  *                                       compression {String} output png compression, oneof ['none', 'fast', 'high']
  *                                       interlaced {Boolean} enable png interlaced
+ *                                       arrangement {String} arrangement of images: 'vertical'|'horizontal'|'compact'
  * @return {Object}                  promise
  */
 const generateSprite = async (sourceList, options) => {

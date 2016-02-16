@@ -100,7 +100,7 @@ const writeImage = (image, filepath, format, params) => {
  * @param  {String} mergedImgPath  dest image path
  * @param  {Object} options        setting:
  *                                     margin {Number} margin between icons
- *                                     arrangement {Number} arrangement of images: 'vertical'|'horizontal'|'compact'
+ *                                     arrangement {String} arrangement of images: 'vertical'|'horizontal'|'compact'
  *                                     compression {String} output png compression: 'none'|'fast'|'high'
  *                                     interlaced {Boolean} enable png interlaced
  * @return {Object}                promise
