@@ -70,7 +70,7 @@ const write = (filename, content, createDirIfNotExists) => {
  * @param  {Function} modifier modify source file content
  * @return {Object}            promise
  */
-async function copy(dir, destDir, filter = () => true, modifier = (content) => content) => {
+async function copy(dir, destDir, filter = () => true, modifier = (content) => content) {
     if (!dir || !destDir || dir === destDir) {
         return;
     }
