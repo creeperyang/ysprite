@@ -8,14 +8,25 @@ const type = (operand) => {
 };
 
 /**
- * open image
+ * open image from file
  * @param  {String} filepath image path
+ * @param  {Number} padding  padding of the image
  * @return {Object}          promise
  */
-const openImage = (filepath) => {
+const openImage = (filepath, padding) => {
+    padding = ~~padding;
     return new Promise((resolve, reject) => {
         lwip.open(filepath, (err, image) => {
-            err ? reject(err) : (image.filepath = filepath, resolve(image));
+            if (err) return reject(err);
+            if (padding) {
+                image.pad(padding, padding, padding, padding, transparent, (err, image) => {
+                    err ? reject(err) : (image.filepath = filepath, resolve(image));
+                });
+            } else {
+                image.filepath = filepath;
+                resolve(image);
+            }
+            // err ? reject(err) : (image.filepath = filepath, resolve(image));
         });
     });
 };
@@ -72,40 +83,56 @@ const writeImage = (image, filepath, format, params) => {
 
 /**
  * merge images
- * @param  {Array} sourceImgPaths source image paths
+ * @param  {Array} sourceImgPaths  source image paths
  * @param  {String} mergedImgPath  dest image path
- * @param  {String} arrange        how to merge images: 'vertical'|'horizental'|'smart'
- * @param  {number} margin         margin between images
+ * @param  {Object} options        setting:
+ *                                     margin {Number} margin between icons
+ *                                     arrangement {Number} arrangement of images: 'vertical'|'horizontal'|'compact'
+ *                                     compression {String} output png compression: 'none'|'fast'|'high'
+ *                                     interlaced {Boolean} enable png interlaced
  * @return {Object}                promise
  */
-const mergeImage = async (sourceImgPaths, mergedImgPath, arrange = 'smart', margin = 0) => {
+async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
     if (!sourceImgPaths || !sourceImgPaths.length) {
         return Promise.reject('invalid sourceImgPaths');
     }
     if (type(sourceImgPaths) !== 'array') {
         sourceImgPaths = [sourceImgPaths + ''];
     }
-    let images = await Promise.all(sourceImgPaths.map((filepath) =>
-        openImage(filepath)));
+    const margin = ~~options.margin;
+    const arrangement = options.arrangement || 'compact';
+    let images = await Promise.all(sourceImgPaths.map((filepath) => openImage(filepath, margin / 2)));
     let rects = images.map((image, index) => {
         let width = image.width();
         let height = image.height();
         return { width, height, image };
     });
-    let pack = new Packer().pack(Packer.sort(rects, 'maxSide'));
+    let pack;
+    switch (arrangement) {
+        case 'vertical':
+            pack = Packer.verticalPack(rects);
+            break;
+        case 'horizontal':
+            pack = Packer.horizontalPack(rects);
+            break;
+        case 'compact':
+        default:
+            pack = new Packer().pack(Packer.sort(rects, 'maxSide'));
+    }
     let mergedImage = await createImage(pack.width, pack.height);
     let batch = mergedImage.batch();
     rects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
         return appendImage(preBatch, image, x, y, width, height);
     }, batch);
     await writeImage(batch, mergedImgPath, 'png', {
-        compression: 'high',
-        interlaced: true,
+        compression: options.compression || 'high',
+        interlaced: !!options.interlaced,
         transparency: true
     });
     return rects.map(({ pack: { x, y }, width, height, image }) => {
-        return { x, y, width, height, path: image.filepath };
+        return { x, y, margin, width, height, path: image.filepath };
     });
 };
 
+export default mergeImage;
 export { mergeImage };

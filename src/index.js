@@ -1,40 +1,72 @@
-import { resolve, isAbsolute, dirname } from 'path';
-import { list, read, write, mkdir, exist, copy } from './util/fs-promise';
+import { resolve, isAbsolute } from 'path';
+import { list } from './util/fs-promise';
 import { mergeImage } from './util/image';
 import generateStyle from './util/style';
 
 const cwd = process.cwd();
-const getAbsolutePath = (path) => isAbsolute(path) ? path : resolve(cwd, path);
-const retinaFilter = (filepath) => /@2x/.test(filepath);
-const antiRetinaFilter = (filepath) => !retinaFilter(filepath);
 
 /**
- * sprite
- * @param  {Array} sourceList list of source image path
- * @param  {String} dest       sprite image path
- * @return {Object}            promise
+ * get absoulute path from path
+ * @param  {String} path source path
+ * @return {String}      absolute path
  */
-const sprite = async (sourceList, dest) => {
-    return mergeImage([].concat(sourceList).map((path) => getAbsolutePath(path)), getAbsolutePath(dest));
+const getAbsolutePath = (path) => isAbsolute(path) ? path : resolve(cwd, path);
+
+/**
+ * default filter to select retina image path
+ * @param  {String} filepath file path
+ * @return {Boolean}         if is retina image
+ */
+const retinaFilter = (filepath) => /@2x/.test(filepath);
+
+/**
+ * check if an item is in an array
+ * @param  {Array}  arr target array
+ * @return {Function}   function to check item
+ */
+const notInArray = (arr = []) => {
+    return (item) => arr.indexOf(item) === -1;
 };
 
 /**
- * smart sprite
- * @param  {String}  source source images' dir
- * @param  {String}  dest   sprite image path
- * @param  {Boolean} retina enable retina mode
- * @return {Object}         promise
+ * generate sprite
+ * @param  {Array|String} sourceList source images list, or source image dir
+ * @param  {Object}       options    setting:
+ *                                       dest {String} required, dest image path
+ *                                       retinaDest {String} dest retina image path
+ *                                       retina {Boolean} whether to enable retina mode
+ *                                       filter {Function} filter out normal image
+ *                                       retinaFilter {Function} filter out retina image
+ *                                       margin {Number} margin between icons
+ *                                       compression {String} output png compression, oneof ['none', 'fast', 'high']
+ *                                       interlaced {Boolean} enable png interlaced
+ * @return {Object}                  promise
  */
-const smartSprite = async (source, dest, retina = false) => {
-    const validPaths = await list(getAbsolutePath(source), ['*.png']);
-    let destPath = getAbsolutePath(dest);
-    let promises = [sprite(retina ? validPaths.filter(antiRetinaFilter) : validPaths, destPath)];
-    if (retina) {
-        let retinaPaths = validPaths.filter(retinaFilter);
-        retinaPaths.length && promises.push(sprite(retinaPaths, destPath.replace(/\.png$/i, '@2x.png')));
+const generateSprite = async (sourceList, options) => {
+    if (!sourceList || !sourceList.length || !options) {
+        throw new Error('invalid arguments');
     }
+    if (typeof sourceList === 'string') {
+        sourceList = await list(getAbsolutePath(sourceList), ['{*/*,*}.png']);
+    }
+    let retina = options.retina;
+    if (options.retinaFilter && retina === undefined) {
+        retina = true;
+    }
+    let promises = [], normalImages, retinaImages;
+    if (retina) {
+        retinaImages = sourceList.filter(options.retinaFilter || retinaFilter);
+        promises.push(mergeImage(retinaImages, getAbsolutePath(options.retinaDest ||
+            options.dest.replace(/\.png$/i, '@2x.png')), { ...options, margin: options.margin * 2 }));
+        normalImages = sourceList.filter(options.filter ?
+            options.filter : notInArray(retinaImages));
+    } else {
+        normalImages = sourceList.filter(options.filter ?
+            options.filter : () => true);
+    }
+    promises.unshift(mergeImage(normalImages, getAbsolutePath(options.dest), options));
     return Promise.all(promises);
 };
 
-export default sprite;
-export { generateStyle, mergeImage, smartSprite };
+export default generateSprite;
+export { generateStyle, mergeImage, generateSprite };

@@ -1,7 +1,7 @@
 class Packer {
     /**
      * pack rects list
-     * @param  {Array} rects (sorted) rect list, like: [{width: 100, height: 100}, ...]
+     * @param  {Array} rects sorted rect list, like: [{width: 100, height: 100}, ...]
      * @return {Object}      pack info object, like: { x, y, width, height, right, down} (right/down is the same type object)
      */
     pack(rects) {
@@ -53,6 +53,68 @@ class Packer {
         }
         return sorted;
     }
+
+    /**
+     * vertical pack rect list
+     * @param  {Array}   rects  rect list, like: [{width: 100, height: 100}, ...]
+     * @param  {Boolean} sorted whether the lib is sorted by width, default is false
+     * @return {Object}         the container, like: {width, height}
+     */
+    static verticalPack(rects, sorted = false) {
+        if (!rects || !rects.length) return false;
+        if (!sorted) rects = Packer.sort(rects, 'width');
+        const widestRect = rects[0];
+        let trackY = widestRect.height;
+        // widestRect.x = widestRect.y = 0;
+        widestRect.pack = {
+            x: 0,
+            y: 0
+        };
+        rects.slice(1).forEach((rect) => {
+            //rect.x = 0;
+            //rect.y = trackY;
+            rect.pack = {
+                x: 0,
+                y: trackY
+            };
+            trackY += rect.height;
+        });
+        return {
+            width: widestRect.width,
+            height: trackY
+        };
+    };
+
+    /**
+     * horizontal pack rect list
+     * @param  {Array}   rects  rect list, like: [{width: 100, height: 100}, ...]
+     * @param  {Boolean} sorted whether the lib is sorted by height, default is false
+     * @return {Object}         the container, like: {width, height}
+     */
+    static horizontalPack(rects, sorted = false) {
+        if (!rects || !rects.length) return false;
+        if (!sorted) rects = Packer.sort(rects, 'height');
+        const highestRect = rects[0];
+        let trackX = highestRect.width;
+        // highestRect.x = highestRect.y = 0;
+        highestRect.pack = {
+            x: 0,
+            y: 0
+        };
+        rects.slice(1).forEach((rect) => {
+            //rect.x = trackX;
+            //rect.y = 0;
+            rect.pack = {
+                x: trackX,
+                y: 0
+            };
+            trackX += rect.width;
+        });
+        return {
+            width: trackX,
+            height: highestRect.height
+        };
+    };
 
     /**
      * find unused container for current rect
