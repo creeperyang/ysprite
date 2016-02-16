@@ -1,5 +1,7 @@
+import { dirname } from 'path';
 import lwip from 'lwip';
 import Packer from './packer';
+import { mkdir, exist } from './fs-promise';
 
 const transparent = [0, 0, 0, 0];
 
@@ -26,7 +28,6 @@ const openImage = (filepath, padding) => {
                 image.filepath = filepath;
                 resolve(image);
             }
-            // err ? reject(err) : (image.filepath = filepath, resolve(image));
         });
     });
 };
@@ -74,10 +75,22 @@ const appendImage = (batch, image, left, top, width, height) => {
  * @return {Object}          promise
  */
 const writeImage = (image, filepath, format, params) => {
+    const dir = dirname(filepath);
+    const ensureDir = async (path) => {
+        let isExist;
+        try {
+            isExist = await exist(path);
+        } catch (e) {}
+        if (!isExist) {
+            await mkdir(path);
+        }
+    };
     return new Promise((resolve, reject) => {
-        image.writeFile(filepath, format, params, (err, image) => {
-            err ? reject(err) : resolve(image);
-        });
+        ensureDir(dir).then(() => {
+            image.writeFile(filepath, format, params, (err, image) => {
+                err ? reject(err) : resolve(image);
+            });
+        }).catch((err) => reject(err));
     });
 };
 
