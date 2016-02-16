@@ -20,13 +20,15 @@ const cliConfig = {
     })],
     externals: [/^[a-z\-0-9]+$/],
     module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                include: [resolve(process.cwd(), 'src'), resolve(process.cwd(), 'bin')],
-                loader: 'babel-loader'
-            }
-        ]
+        loaders: [ {
+            test: /\.js$/,
+            include: [resolve(process.cwd(), 'src'), resolve(process.cwd(), 'bin')],
+            loader: 'babel-loader'
+        }, {
+            test: /\.json$/,
+            include: [process.cwd()],
+            loader: 'json'
+        }]
     }
 };
 

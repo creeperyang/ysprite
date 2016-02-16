@@ -1,7 +1,7 @@
 import colors from 'colors';
 import program from './command';
 import { generateSprite, generateStyle } from '../src';
-
+import pkg from '../package.json';
 
 const parseRegexp = (str) => {
     const r = /([\s\S]+),([igm]{1,3})$/.exec(str);
@@ -17,7 +17,7 @@ const logErr = (msg) => console.log(colors.red(`[${new Date().toTimeString().sli
 
 
 program
-    .version('2.0.0')
+    .version(pkg.version)
     .option('-s, --source [path]', 'required, set source images dir')
     .option('-o, --output [path]', 'required, set sprite image path')
     .option('--output-retina <path>', 'set retina sprite image path. defaults to same with normal path and add "@2x" to filename')
@@ -43,7 +43,7 @@ program.on('--help', () => {
     console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey);
     console.log('');
     console.log('');
-    console.log('  Author: <creeper pashanhu6@hotmail.com>'.rainbow);
+    console.log(`  Author: ${pkg.author}`.rainbow);
 });
 
 program.parse(process.argv);
@@ -53,7 +53,7 @@ const { retina, interlaced, margin, filter, retinaFilter, style, compression, ou
 
 if (program.rawArgs.length === 2) {
     console.log('');
-    console.log('★★★★★  ysprite@v2.0.0  ★★★★★'.green);
+    console.log(`★★★★★  ysprite@v${pkg.version}  ★★★★★`.green);
     console.log('');
     exitCli();
 } else if (!source || !output || (!stylePath && style)) {
