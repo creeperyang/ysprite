@@ -31,6 +31,8 @@ program
     .option('--margin [number]', 'set margin between images. defaults to 0, prefer even number', parseInt)
     .option('--filter [regexp]', 'set normal image filter.', parseRegexp)
     .option('--retina-filter [regexp]', 'set retina image filter.', parseRegexp)
+    .option('--arrangement [arrange]', 'set arrangement of images. one of ["compact", "vertical", "horizontal"], defaults to "compact"',
+        /^(compact|vertical|horizontal)$/i, 'compact')
     .option('--style-prefix [prefix]', 'set style className prefix, defaults to "icon"')
     .option('--style-connector [connector]', 'set style className connector, defaults to "-"')
     .option('--style-suffix [suffix]', 'set style className suffix, defaults to ""')
@@ -53,7 +55,7 @@ program.on('--help', () => {
 program.parse(process.argv);
 
 const { retina, interlaced, margin, filter, retinaFilter, style, compression, output, outputRetina, source,
-    stylePath, styleBanner, stylePrefix, styleSuffix, styleConnector } = program;
+    stylePath, styleBanner, stylePrefix, styleSuffix, styleConnector, arrangement } = program;
 
 if (program.rawArgs.length === 2) {
     console.log('');
@@ -77,7 +79,8 @@ const spriteOpts = {
     margin: typeof margin === 'number' ? margin : 0,
     compression: typeof compression === 'string' ? compression : 'high',
     dest: output,
-    retinaDest: outputRetina
+    retinaDest: outputRetina,
+    arrangement: typeof arrangement === 'string' ? arrangement : 'compact'
 };
 
 if (filter) {
