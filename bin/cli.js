@@ -3,6 +3,11 @@ import program from './command';
 import { generateSprite, generateStyle } from '../src';
 import pkg from '../package.json';
 
+/**
+ * parse regexp from string
+ * @param  {String} str regexp text, like "icons\\w*\.png,i" (/icons\w*.png/i)
+ * @return {RegExp}     transformed regexp
+ */
 const parseRegexp = (str) => {
     const r = /([\s\S]+),([igm]{1,3})$/.exec(str);
     return r ? new RegExp(r[1], r[2]) : new RegExp(str);
@@ -11,7 +16,6 @@ const parseRegexp = (str) => {
 const exitCli = (code = 0) => {
     process.exit(code);
 };
-
 const logOk = (msg) => console.log(colors.green(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
 const logErr = (msg) => console.log(colors.red(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
 
@@ -84,7 +88,7 @@ if (filter) {
 if (retinaFilter) {
     spriteOpts.retinaFilter = (filename) => {
         return retinaFilter.test(filename);
-    }
+    };
 }
 
 const styleOpts = {
@@ -95,19 +99,19 @@ const styleOpts = {
 };
 
 // start to sprite and style
-logOk('Start generate sprite');
+logOk('Start generate sprite.');
 generateSprite(source, spriteOpts).then((data) => {
     logOk(`Finish.    Sprite path: normal -> ${output}  retina -> ${outputRetina}`);
     if (!style) return;
 
     console.log('');
-    logOk('Start generate style:');
+    logOk('Start generate style.');
     typeof stylePrefix === 'string' && (styleOpts.prefix = stylePrefix);
     typeof styleConnector === 'string' && (styleOpts.connector = styleConnector);
     typeof styleSuffix === 'string' && (styleOpts.suffix = styleSuffix);
     return generateStyle(data[0], styleOpts);
 }, (err) => {
-    logErr('Failed generate sprite.');
+    logErr('Failed generate sprite:');
     console.error(err.stack ? err.stack : err);
 }).then((data) => {
     data && logOk(`Finish.    Style path: ${stylePath}`);
