@@ -1,7 +1,7 @@
 import Packer from '../../src/util/packer';
 
-describe('Packer lib', () => {
-    describe('static sort method', () => {
+describe('Base lib (Packer)', () => {
+    describe('class method # sort', () => {
         const rects = [{
             width: 30,
             height: 60
@@ -85,7 +85,96 @@ describe('Packer lib', () => {
         });
     });
 
-    describe('instance pack method', () => {
+    describe('class method # verticalPack/horizontalPack', () => {
+        const rects = [{
+            width: 30,
+            height: 60
+        }, {
+            width: 40,
+            height: 50
+        }, {
+            width: 100,
+            height: 50
+        }, {
+            width: 120,
+            height: 120
+        }];
+        it('should correctly pack rects (vertical)', () => {
+            const pack = Packer.verticalPack(rects);
+            expect(pack).toEqual({
+                width: 120,
+                height: 280
+            });
+            expect(rects).toEqual([{
+                width: 120,
+                height: 120,
+                pack: {
+                    x: 0,
+                    y: 0
+                }
+            }, {
+                width: 100,
+                height: 50,
+                pack: {
+                    x: 0,
+                    y: 120
+                }
+            }, {
+                width: 40,
+                height: 50,
+                pack: {
+                    x: 0,
+                    y: 170
+                }
+            }, {
+                width: 30,
+                height: 60,
+                pack: {
+                    x: 0,
+                    y: 220
+                }
+            }]);
+        });
+
+        it('should correctly pack rects (horizontal)', () => {
+            const pack = Packer.horizontalPack(rects);
+            expect(pack).toEqual({
+                width: 290,
+                height: 120
+            });
+            expect(rects).toEqual([{
+                width: 120,
+                height: 120,
+                pack: {
+                    x: 0,
+                    y: 0
+                }
+            }, {
+                width: 30,
+                height: 60,
+                pack: {
+                    x: 120,
+                    y: 0
+                }
+            }, {
+                width: 100,
+                height: 50,
+                pack: {
+                    x: 150,
+                    y: 0
+                }
+            }, {
+                width: 40,
+                height: 50,
+                pack: {
+                    x: 250,
+                    y: 0
+                }
+            }]);
+        });
+    });
+
+    describe('instance method # pack', () => {
         it('should correctly pack rects', () => {
             const sorted = [{
                 width: 120,
