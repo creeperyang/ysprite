@@ -13,7 +13,8 @@ const list = (root, pattern = ['*.*']) => {
     return new Promise(function(resolve, reject) {
         glob(pattern, root ? {
             cwd: root
-        } : {}, (err, data) =>  err ? reject(err) : resolve(data.map((file) => resolvePath(root, file))));
+        } : {}, (err, data) =>  err ? reject(err) : resolve(root ?
+            data.map((file) => resolvePath(root, file)) : data));
     });
 };
 
@@ -57,27 +58,8 @@ const write = (filename, content, createDirIfNotExists) => {
         promise.then(() => {
             writeFile(filename, content, {
                 encoding: 'utf8'
-            }, (err, result) => err ? reject(err) : resolve(result));
+            }, (err) => err ? reject(err) : resolve());
         });
-    });
-};
-
-/**
- * copy dir
- * @param  {String}   dir      source dir
- * @param  {String}   destDir  dest dir
- * @param  {Function} filter   filter source files
- * @param  {Function} modifier modify source file content
- * @return {Object}            promise
- */
-async function copy(dir, destDir, filter = () => true, modifier = (content) => content) {
-    if (!dir || !destDir || dir === destDir) {
-        return;
-    }
-    let sourceFiles = await list(undefined, [(dir + '/').replace(/\/\/$/, '/') + '**/*.*']);
-    return await sourceFiles.filter(filter).map(async (filename) => {
-        let destPath = resolve(destDir, parse(filename).base);
-        return await write(destPath, await modifier(await read(filename)), true);
     });
 };
 
@@ -88,8 +70,8 @@ async function copy(dir, destDir, filter = () => true, modifier = (content) => c
  */
 const mkdir = (dir) => {
     return new Promise((resolve, reject) => {
-        mkdirp(dir, (err, result) => err ? reject(err) : resolve(result));
+        mkdirp(dir, (err) => err ? reject(err) : resolve());
     });
 };
 
-export { list, read, write, mkdir, exist, copy };
+export { list, read, write, mkdir, exist };
