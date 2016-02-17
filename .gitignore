@@ -4,5 +4,6 @@ _*
 .DS_Store
 *.log
 /index.js
+coverage
 test/res/sprite*.*
 test/res/style_*

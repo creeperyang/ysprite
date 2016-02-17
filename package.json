@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "npm run lint && node_modules/.bin/babel-node test/run.js",
+    "test-cov": "node_modules/.bin/babel-node node_modules/.bin/istanbul cover --dir test/coverage test/run.js",
     "prepublish": "npm run build",
     "build": "npm run buildCli && npm run buildLib",
     "lint": "node_modules/.bin/eslint tools src bin test",
@@ -51,6 +52,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "eslint": "^2.1.0",
     "eslint-plugin-babel": "^3.1.0",
+    "istanbul": "^1.0.0-alpha.2",
     "jasmine": "^2.4.1",
     "jasmine-spec-reporter": "^2.4.0",
     "json-loader": "^0.5.4",
