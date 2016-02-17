@@ -139,6 +139,10 @@ describe('Base lib', () => {
                     }
                 }]);
             });
+            it('should not pack rects (vertical) if there is no valid rects', () => {
+                const pack = Packer.verticalPack('hi');
+                expect(pack).toBe(false);
+            });
 
             it('should correctly pack rects (horizontal)', () => {
                 const pack = Packer.horizontalPack(rects);
@@ -175,6 +179,10 @@ describe('Base lib', () => {
                         y: 0
                     }
                 }]);
+            });
+            it('should not pack rects (horizontal) if there is no valid rects', () => {
+                const pack = Packer.horizontalPack('hi');
+                expect(pack).toBe(false);
             });
         });
 
@@ -244,6 +252,10 @@ describe('Base lib', () => {
                     }
                 }]);
             });
+            it('should not pack rects if there is no valid rects', () => {
+                const pack = new Packer().pack();
+                expect(pack).toBe(false);
+            });
         });
     });
 
@@ -287,7 +299,7 @@ describe('Base lib', () => {
                 const error = new Error('mock fs.readdir error');
                 fs.readdir = (path, cb) => {
                     process.nextTick(() => {
-                        cb(error)
+                        cb(error);
                     });
                 };
                 list(rootDir).then(() => {
