@@ -7,3 +7,4 @@ _*
 coverage
 test/res/sprite*.*
 test/res/style_*
+.tmp

@@ -5,15 +5,13 @@ class Packer {
      * @return {Object}      pack info object, like: { x, y, width, height, right, down} (right/down is the same type object)
      */
     pack(rects) {
-        if (!rects || !rects.length) return false;
-        if (rects[0]) {
-            this.root = {
-                x: 0,
-                y: 0,
-                width: rects[0].width,
-                height: rects[0].height
-            };
-        }
+        if (!rects || !rects.length || typeof rects[0] !== 'object') return false;
+        this.root = {
+            x: 0,
+            y: 0,
+            width: rects[0].width,
+            height: rects[0].height
+        };
         rects.forEach((rect) => {
             let container = this.findContainer(this.root, rect.width, rect.height);
             rect.pack = container ? this.splitContainer(container, rect.width, rect.height) :
@@ -61,7 +59,7 @@ class Packer {
      * @return {Object}         the container, like: {width, height}
      */
     static verticalPack(rects, sorted = false) {
-        if (!rects || !rects.length) return false;
+        if (!rects || !rects.length || typeof rects[0] !== 'object') return false;
         if (!sorted) rects = Packer.sort(rects, 'width');
         const widestRect = rects[0];
         let trackY = widestRect.height;
@@ -92,7 +90,7 @@ class Packer {
      * @return {Object}         the container, like: {width, height}
      */
     static horizontalPack(rects, sorted = false) {
-        if (!rects || !rects.length) return false;
+        if (!rects || !rects.length || typeof rects[0] !== 'object') return false;
         if (!sorted) rects = Packer.sort(rects, 'height');
         const highestRect = rects[0];
         let trackX = highestRect.width;

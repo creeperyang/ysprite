@@ -1,16 +1,7 @@
-import { resolve, isAbsolute } from 'path';
-import { list } from './util/fs-promise';
-import { mergeImage } from './util/image';
-import generateStyle from './util/style';
-
-const cwd = process.cwd();
-
-/**
- * get absoulute path from path
- * @param  {String} path source path
- * @return {String}      absolute path
- */
-const getAbsolutePath = (path) => isAbsolute(path) ? path : resolve(cwd, path);
+import { list } from './lib/fs-promise';
+import { mergeImage } from './lib/image';
+import { getAbsolutePath, notInArray } from './lib/util';
+import generateStyle from './lib/style';
 
 /**
  * default filter to select retina image path
@@ -18,15 +9,6 @@ const getAbsolutePath = (path) => isAbsolute(path) ? path : resolve(cwd, path);
  * @return {Boolean}         if is retina image
  */
 const retinaFilter = (filepath) => /@2x/.test(filepath);
-
-/**
- * check if an item is in an array
- * @param  {Array}  arr target array
- * @return {Function}   function to check item
- */
-const notInArray = (arr = []) => {
-    return (item) => arr.indexOf(item) === -1;
-};
 
 /**
  * generate sprite

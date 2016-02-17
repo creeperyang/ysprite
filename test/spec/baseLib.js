@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import fs from 'fs';
-import Packer from '../../src/util/packer';
-import { list, read, write, mkdir, exist, copy } from '../../src/util/fs-promise';
+import Packer from '../../src/lib/packer';
+import { list, read, write, mkdir, exist, copy } from '../../src/lib/fs-promise';
 
 describe('Base lib', () => {
     describe('Packer', () => {
@@ -140,7 +140,7 @@ describe('Base lib', () => {
                 }]);
             });
             it('should not pack rects (vertical) if there is no valid rects', () => {
-                const pack = Packer.verticalPack('hi');
+                const pack = Packer.verticalPack('');
                 expect(pack).toBe(false);
             });
 
@@ -181,7 +181,7 @@ describe('Base lib', () => {
                 }]);
             });
             it('should not pack rects (horizontal) if there is no valid rects', () => {
-                const pack = Packer.horizontalPack('hi');
+                const pack = Packer.horizontalPack('');
                 expect(pack).toBe(false);
             });
         });
@@ -284,13 +284,13 @@ describe('Base lib', () => {
                 }).catch((err) => done.fail(err));
             });
             it('should list all files with complex pattern', (done) => {
-                list(rootDir, ['*.js', 'util/*', '!util/fs-promise.js']).then((files) => {
-                    expect(files.length).toEqual(4);
+                list(rootDir, ['*.js', 'lib/*', '!lib/fs-promise.js']).then((files) => {
+                    expect(files.length).toEqual(5);
                     expect(files).toEqual(jasmine.arrayContaining([
                         rootDir + '/index.js',
-                        rootDir + '/util/image.js',
-                        rootDir + '/util/packer.js',
-                        rootDir + '/util/style.js']));
+                        rootDir + '/lib/image.js',
+                        rootDir + '/lib/packer.js',
+                        rootDir + '/lib/style.js']));
                     done();
                 }).catch((err) => done.fail(err));
             });

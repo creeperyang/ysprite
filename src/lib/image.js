@@ -5,10 +5,6 @@ import { mkdir, exist } from './fs-promise';
 
 const transparent = [0, 0, 0, 0];
 
-const type = (operand) => {
-    return Object.prototype.toString.call(operand).slice(8, -1).toLowerCase();
-};
-
 /**
  * open image from file
  * @param  {String} filepath image path
@@ -106,14 +102,11 @@ const writeImage = (image, filepath, format, params) => {
  * @return {Object}                promise
  */
 async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
-    if (!sourceImgPaths || !sourceImgPaths.length) {
-        return Promise.reject('invalid sourceImgPaths');
+    if (!sourceImgPaths || !sourceImgPaths.length || !mergedImgPath) {
+        throw new Error('invalid sourceImgPaths or mergedImgPath');
     }
-    if (type(sourceImgPaths) !== 'array') {
-        sourceImgPaths = [sourceImgPaths + ''];
-    }
+    sourceImgPaths = [].concat(sourceImgPaths).map((item) => item + '');
     const margin = ~~options.margin;
-    const arrangement = options.arrangement || 'compact';
     let images = await Promise.all(sourceImgPaths.map((filepath) => openImage(filepath, margin / 2)));
     let rects = images.map((image, index) => {
         let width = image.width();
@@ -121,7 +114,7 @@ async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
         return { width, height, image };
     });
     let pack;
-    switch (arrangement) {
+    switch (options.arrangement) {
         case 'vertical':
             pack = Packer.verticalPack(rects);
             break;
@@ -137,7 +130,7 @@ async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
     rects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
         return appendImage(preBatch, image, x, y, width, height);
     }, batch);
-    await writeImage(batch, mergedImgPath, 'png', {
+    await writeImage(batch, mergedImgPath + '', 'png', {
         compression: options.compression || 'high',
         interlaced: !!options.interlaced,
         transparency: true
