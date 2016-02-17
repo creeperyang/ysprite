@@ -11,7 +11,7 @@
     "test-cov": "node_modules/.bin/babel-node node_modules/.bin/istanbul cover --dir test/coverage test/run.js",
     "prepublish": "npm run build",
     "build": "npm run buildCli && npm run buildLib",
-    "lint": "node_modules/.bin/eslint tools src bin test",
+    "lint": "node_modules/.bin/eslint tools src bin test/run.js test/spec",
     "buildLib": "node_modules/.bin/babel-node --eval \"require('./tools/buildLib.js').default().catch(console.log.bind(console))\"",
     "buildCli": "node_modules/.bin/babel-node --eval \"require('./tools/buildCli.js').default().catch(console.log.bind(console))\""
   },
@@ -39,7 +39,7 @@
     "babel-polyfill": "^6.5.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "glob-all": "^3.0.1",
+    "glob-all": "creeperyang/node-glob-all",
     "lwip": "0.0.8",
     "mkdirp": "^0.5.1"
   },
