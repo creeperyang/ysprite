@@ -3,5 +3,6 @@ node_modules
 _*
 .DS_Store
 *.log
+/index.js
 test/res/sprite*.*
 test/res/style_*
