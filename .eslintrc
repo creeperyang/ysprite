@@ -39,15 +39,15 @@
         "eol-last": [2],
         "quotes": [2, "single"],
         "key-spacing": [2, {
-          "beforeColon": false,
-          "afterColon": true
+            "beforeColon": false,
+            "afterColon": true
         }],
         "linebreak-style": [2, "unix"],
         "no-new-object": [2],
         "no-unneeded-ternary": [2],
         "semi": [2, "always"],
         "semi-spacing": [2, {"before": false, "after": true}],
-        "space-after-keywords": [2, "always"],
+        "keyword-spacing": [2, {"before": true, "after": true, "overrides": {}}],
         "space-before-function-paren": [2, "never"],
         "no-multiple-empty-lines": 0,
         "spaced-comment": [1, "always", { "markers": ["global", "globals", "eslint", "eslint-disable", "*package", "!", ","] }],
