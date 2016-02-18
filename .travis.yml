@@ -8,6 +8,7 @@ matrix:
     - node_js: "4.2"
     - node_js: "5.4"
 script: 
+  - "npm run lint"
   - "npm test"
   - "npm run test-cov"
 after_script: "npm install coveralls && cat ./test/coverage/lcov.info | coveralls"

@@ -7,11 +7,11 @@
     "ysprite": ".bin/cli.js"
   },
   "scripts": {
-    "test": "npm run clean && npm run lint && node_modules/.bin/babel-node test/run.js",
+    "test": "npm run clean && node_modules/.bin/babel-node test/run.js",
     "test-cov": "npm run clean && node_modules/.bin/babel-node node_modules/.bin/istanbul cover --dir test/coverage test/run.js",
     "prepublish": "npm run build",
     "clean": "rm -rf .tmp test/coverage test/res/sprite_* test/res/style_*",
-    "build": "npm run buildCli && npm run buildLib",
+    "build": "npm run lint && npm run buildCli && npm run buildLib",
     "lint": "node_modules/.bin/eslint tools src bin test/run.js test/spec",
     "buildLib": "node_modules/.bin/babel-node --eval \"require('./tools/buildLib.js').default().catch(console.log.bind(console))\"",
     "buildCli": "node_modules/.bin/babel-node --eval \"require('./tools/buildCli.js').default().catch(console.log.bind(console))\""
