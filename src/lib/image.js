@@ -102,7 +102,7 @@ const writeImage = (image, filepath, format, params) => {
  * @return {Object}                promise
  */
 async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
-    if (!sourceImgPaths || !sourceImgPaths.length || !mergedImgPath) {
+    if (!sourceImgPaths || !sourceImgPaths.length || typeof mergedImgPath !== 'string') {
         throw new Error('invalid sourceImgPaths or mergedImgPath');
     }
     sourceImgPaths = [].concat(sourceImgPaths).map((item) => item + '');
@@ -130,14 +130,22 @@ async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
     rects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
         return appendImage(preBatch, image, x, y, width, height);
     }, batch);
-    await writeImage(batch, mergedImgPath + '', 'png', {
+    await writeImage(batch, mergedImgPath, 'png', {
         compression: options.compression || 'high',
         interlaced: !!options.interlaced,
         transparency: true
     });
-    return rects.map(({ pack: { x, y }, width, height, image }) => {
-        return { x, y, margin, width, height, path: image.filepath };
-    });
+    return {
+        source: rects.map(({ pack: { x, y }, width, height, image }) => {
+            return { x, y, margin, width, height, path: image.filepath };
+        }),
+        merged: {
+            path: mergedImgPath,
+            image: mergeImage,
+            width: pack.width,
+            height: pack.height
+        }
+    };
 };
 
 export default mergeImage;

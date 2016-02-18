@@ -44,7 +44,7 @@ describe('Main Function', () => {
 
         it('should fail if createDir failed', (done) => {
             mergeImage(['test/res/icons/app.png'], '/etc/nonexistent/merge.png').then((info) => {
-                done.fail('should not invoke');
+                done.fail('should not invoke. Dont run test with sudo.');
             }).catch((err) => {
                 expect(err).toBeTruthy();
                 done();
@@ -53,8 +53,8 @@ describe('Main Function', () => {
 
         it('should merge image successfully.', (done) => {
             mergeImage('test/res/icons/app.png', '.tmp/merge.png').then((info) => {
-                expect(info.length).toBe(1);
-                expect(info[0]).toEqual({
+                expect(info.source.length).toBe(1);
+                expect(info.source[0]).toEqual({
                     x: 0,
                     y: 0,
                     margin: 0,
@@ -62,6 +62,9 @@ describe('Main Function', () => {
                     height: 35,
                     path: 'test/res/icons/app.png'
                 });
+                expect(info.merged.width).toBe(35);
+                expect(info.merged.height).toBe(35);
+                expect(info.merged.path).toBe('.tmp/merge.png');
                 done();
             }).catch((err) => {
                 done.fail(err);
@@ -99,7 +102,7 @@ describe('Main Function', () => {
                     spyOn(methods, 'reportOk').and.callThrough();
                     generateSprite(imgDir, { ...spriteOpts, margin: 10 }).then((data) => {
                         methods.reportOk('sprite');
-                        return generateStyle(data[0], { ...styleOpts, stylePath });
+                        return generateStyle(data[0].source, { ...styleOpts, stylePath });
                     }, (err) => {
                         methods.reportError();
                         done.fail(err);
@@ -157,7 +160,7 @@ describe('Main Function', () => {
                     spyOn(methods, 'reportOk').and.callThrough();
                     generateSprite(imgDir, { ...spriteOpts, margin: 0 }).then((data) => {
                         methods.reportOk('sprite');
-                        return generateStyle(data[0], { ...styleOpts, stylePath });
+                        return generateStyle(data[0].source, { ...styleOpts, stylePath });
                     }, (err) => {
                         methods.reportError();
                         done.fail(err);
@@ -216,7 +219,7 @@ describe('Main Function', () => {
                 spyOn(methods, 'reportOk').and.callThrough();
                 generateSprite(imgDir, { ...spriteOpts, margin: 0, arrangement: 'vertical' }).then((data) => {
                     methods.reportOk('sprite');
-                    return generateStyle(data[0], { ...styleOpts, stylePath });
+                    return generateStyle(data[0].source, { ...styleOpts, stylePath });
                 }, (err) => {
                     methods.reportError();
                     done.fail(err);
@@ -274,7 +277,7 @@ describe('Main Function', () => {
                 spyOn(methods, 'reportOk').and.callThrough();
                 generateSprite(imgDir, { ...spriteOpts, margin: 6, arrangement: 'horizontal' }).then((data) => {
                     methods.reportOk('sprite');
-                    return generateStyle(data[0], { ...styleOpts, stylePath });
+                    return generateStyle(data[0].source, { ...styleOpts, stylePath });
                 }, (err) => {
                     methods.reportError();
                     done.fail(err);

@@ -50,6 +50,6 @@ async function genrateStyle(infoList, { connector = '-', prefix = 'icon', suffix
         await write(stylePath, style, true);
     }
     return style;
-};
+}
 
 export default genrateStyle;
