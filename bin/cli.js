@@ -104,7 +104,7 @@ const styleOpts = {
 // start to sprite and style
 logOk('Start generate sprite.');
 generateSprite(source, spriteOpts).then((data) => {
-    logOk(`Finish.    Sprite path: normal -> ${output}  retina -> ${outputRetina}`);
+    logOk(`Finish.    Sprite path: normal -> ${output}  retina -> ${data[1] && data[1].merged.path}`);
     if (!style) return;
 
     console.log('');
@@ -112,7 +112,7 @@ generateSprite(source, spriteOpts).then((data) => {
     typeof stylePrefix === 'string' && (styleOpts.prefix = stylePrefix);
     typeof styleConnector === 'string' && (styleOpts.connector = styleConnector);
     typeof styleSuffix === 'string' && (styleOpts.suffix = styleSuffix);
-    return generateStyle(data[0], styleOpts);
+    return generateStyle(data[0].source, styleOpts);
 }, (err) => {
     logErr('Failed generate sprite:');
     console.error(err.stack ? err.stack : err);
