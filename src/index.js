@@ -12,18 +12,18 @@ const retinaFilter = (filepath) => /@2x/.test(filepath);
 
 /**
  * generate sprite
- * @param  {Array|String} sourceList source images list, or source image dir
- * @param  {Object}       options    setting:
- *                                       dest {String} required, dest image path
- *                                       retinaDest {String} dest retina image path
- *                                       retina {Boolean} whether to enable retina mode
- *                                       filter {Function} filter out normal image
- *                                       retinaFilter {Function} filter out retina image
- *                                       margin {Number} margin between icons
- *                                       compression {String} output png compression, oneof ['none', 'fast', 'high']
- *                                       interlaced {Boolean} enable png interlaced
- *                                       arrangement {String} arrangement of images: 'vertical'|'horizontal'|'compact'
- * @return {Object}                  promise
+ * @param  {Array|String} sourceList             source images list, or source image dir
+ * @param  {Object}       options                setting:
+           {String}       options.dest           required, dest image path
+           {String}       options.retinaDest     dest retina image path
+           {Boolean}      options.retina         whether to enable retina mode
+           {Function}     options.filter         filter out normal image
+           {Function}     options.retinaFilter   filter out retina image
+           {Number}       options.margin         margin between icons
+           {Boolean}      options.compression    output png compression, oneof ['none', 'fast', 'high']
+           {Boolean}      options.interlaced     enable png interlaced
+           {String}       options.arrangement    arrangement of images: 'vertical'|'horizontal'|'compact'
+ * @return {Object}                              promise
  */
 const generateSprite = async (sourceList, options) => {
     if (!sourceList || !sourceList.length || !options) {
