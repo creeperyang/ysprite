@@ -63,14 +63,11 @@ class Packer {
         if (!sorted) rects = Packer.sort(rects, 'width');
         const widestRect = rects[0];
         let trackY = widestRect.height;
-        // widestRect.x = widestRect.y = 0;
         widestRect.pack = {
             x: 0,
             y: 0
         };
         rects.slice(1).forEach((rect) => {
-            //rect.x = 0;
-            //rect.y = trackY;
             rect.pack = {
                 x: 0,
                 y: trackY
@@ -94,14 +91,11 @@ class Packer {
         if (!sorted) rects = Packer.sort(rects, 'height');
         const highestRect = rects[0];
         let trackX = highestRect.width;
-        // highestRect.x = highestRect.y = 0;
         highestRect.pack = {
             x: 0,
             y: 0
         };
         rects.slice(1).forEach((rect) => {
-            //rect.x = trackX;
-            //rect.y = 0;
             rect.pack = {
                 x: trackX,
                 y: 0
