@@ -1,8 +1,8 @@
 {
   "name": "ysprite",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A lightweight and powerful css sprite util.",
-  "main": "src/index.js",
+  "main": "index.js",
   "bin": {
     "ysprite": ".bin/cli.js"
   },
@@ -18,7 +18,8 @@
   },
   "files": [
     "src",
-    ".bin"
+    ".bin",
+    "index.js"
   ],
   "repository": {
     "type": "git",
