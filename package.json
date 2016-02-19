@@ -1,6 +1,6 @@
 {
   "name": "ysprite",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A lightweight and powerful css sprite util.",
   "main": "index.js",
   "bin": {
@@ -29,7 +29,8 @@
     "sprite",
     "css",
     "image",
-    "es6"
+    "cli",
+    "retina"
   ],
   "author": "creeperyang <pashanhu6@hotmail.com>",
   "license": "MIT",
