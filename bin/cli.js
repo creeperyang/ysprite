@@ -1,3 +1,4 @@
+import { relative, isAbsolute } from 'path';
 import colors from 'colors';
 import program from './command';
 import { generateSprite, generateStyle } from '../src';
@@ -104,7 +105,13 @@ const styleOpts = {
 // start to sprite and style
 logOk('Start generate sprite.');
 generateSprite(source, spriteOpts).then((data) => {
-    logOk(`Finish.    Sprite path: normal -> ${output}  retina -> ${data[1] && data[1].merged.path}`);
+    let retinaPath = '';
+    if (data[1]) {
+        retinaPath = outputRetina ? outputRetina : isAbsolute(output) ? data[1].merged.path :
+            relative(process.cwd(), data[1].merged.path);
+        retinaPath = 'retina -> ' + retinaPath;
+    }
+    logOk(`Finish.  Sprite path: normal -> ${output}  ${retinaPath}`);
     if (!style) return;
 
     console.log('');
@@ -117,7 +124,7 @@ generateSprite(source, spriteOpts).then((data) => {
     logErr('Failed generate sprite:');
     console.error(err.stack ? err.stack : err);
 }).then((data) => {
-    data && logOk(`Finish.    Style path: ${stylePath}`);
+    data && logOk(`Finish.  Style path: ${stylePath}`);
 }, (err) => {
     logErr('Failed generate style:');
     console.error(err.stack ? err.stack : err);
