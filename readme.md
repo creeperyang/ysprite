@@ -28,11 +28,14 @@ And then, it's ready to use:
 ```js
 // es6+ with babel6+
 import { generateStyle, generateSprite } from 'ysprite';
-
 // normal require
-var Sprite = require('ysprite');
-Sprite.generateSprite(dir, opts);
-Sprite.generateStyle(list, opts);
+var Sprite = require('ysprite'); // Sprite is a object has methods: { generateStyle, generateSprite }
+
+generateSprite(source, options).then(function(data) {
+    return generateStyle(data[0].source, options);
+}).then(function(style) {
+    console.log(style);
+});
 ```
 
 More info about [API](https://github.com/creeperyang/ysprite/wiki/API).
