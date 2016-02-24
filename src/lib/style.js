@@ -20,7 +20,9 @@ const RETINA_IMG_PLACEHOLDER = 'SPRITE@2x.png';
  * @return {String}                          generated style text
  */
 async function generateStyle(infoList, { connector = '-', prefix = 'icon', suffix = '', retina = true, writeToFile = true, stylePath, imagePath, retinaImagePath, banner = true } = {}) {
-    if (!infoList || !infoList.length) return;
+    if (!infoList || !infoList.length) {
+        throw new Error('invalid arguments');
+    }
     const newLine = '\n';
     imagePath = !imagePath ? IMG_PLACEHOLDER : stylePath ? relative(dirname(stylePath), imagePath) : imagePath;
     retinaImagePath = !retinaImagePath ? RETINA_IMG_PLACEHOLDER :
