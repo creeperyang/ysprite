@@ -4,7 +4,12 @@ import webpack from 'webpack';
 const loaders = [ {
     test: /\.js$/,
     include: [resolve(process.cwd(), 'src'), resolve(process.cwd(), 'bin')],
-    loader: 'babel-loader'
+    loader: 'babel-loader',
+    query: {
+        babelrc: false,
+        presets: ['es2015', 'stage-0'],
+        plugins: [['transform-runtime', { polyfill: false }]]
+    }
 }, {
     test: /\.json$/,
     include: [process.cwd()],
@@ -12,7 +17,7 @@ const loaders = [ {
 }];
 
 const cliConfig = {
-    entry: ['babel-polyfill', process.cwd() + '/bin/cli.js'],
+    entry: [process.cwd() + '/bin/cli.js'],
     output: {
         path: '.bin',
         filename: 'cli.js',
@@ -33,7 +38,7 @@ const cliConfig = {
 };
 
 const libConfig = {
-    entry: ['babel-polyfill', process.cwd() + '/src/index.js'],
+    entry: [process.cwd() + '/src/index.js'],
     output: {
         filename: 'index.js',
         libraryTarget: 'commonjs2',
