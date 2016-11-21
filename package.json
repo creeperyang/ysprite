@@ -42,7 +42,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "glob-all": "creeperyang/node-glob-all",
-    "lwip": "0.0.8",
+    "lwip": "0.0.9",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
