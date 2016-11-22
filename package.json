@@ -2,19 +2,15 @@
   "name": "ysprite",
   "version": "2.0.3",
   "description": "A lightweight and powerful css sprite util.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
-    "ysprite": ".bin/cli.js"
+    "ysprite": "bin/cli.js"
   },
   "scripts": {
-    "test": "npm run clean && node_modules/.bin/babel-node test/run.js",
-    "test-cov": "npm run clean && node_modules/.bin/babel-node node_modules/.bin/istanbul cover --dir test/coverage test/run.js",
-    "prepublish": "npm run build",
-    "clean": "rm -rf .tmp test/coverage test/res/sprite_* test/res/style_*",
-    "build": "npm run lint && npm run buildCli && npm run buildLib",
-    "lint": "node_modules/.bin/eslint tools src bin test/run.js test/spec",
-    "buildLib": "node_modules/.bin/babel-node --eval \"require('./tools/buildLib.js').default().catch(console.log.bind(console))\"",
-    "buildCli": "node_modules/.bin/babel-node --eval \"require('./tools/buildCli.js').default().catch(console.log.bind(console))\""
+    "test-only": "ava",
+    "test-ci": "nyc npm run test-only",
+    "test": "npm run test-only",
+    "lint": "eslint lib bin test"
   },
   "files": [
     "src",
@@ -41,25 +37,31 @@
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "glob-all": "creeperyang/node-glob-all",
+    "glob-all": "^3.1.0",
     "lwip": "0.0.9",
+    "minimatch": "^3.0.3",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-core": "^6.5.1",
-    "babel-eslint": "^5.0.0",
-    "babel-loader": "^6.2.2",
-    "babel-plugin-transform-runtime": "^6.5.2",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "babel-runtime": "^6.5.0",
-    "eslint": "^2.1.0",
-    "eslint-plugin-babel": "^3.1.0",
-    "istanbul": "^1.0.0-alpha.2",
-    "jasmine": "^2.4.1",
-    "jasmine-spec-reporter": "^2.4.0",
-    "json-loader": "^0.5.4",
-    "webpack": "^1.12.13"
+    "ava": "^0.17.0",
+    "eslint": "^3.10.2",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "nyc": "^9.0.1",
+    "tempfile": "^1.1.1"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "lib/**/*.js"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "ava": {
+    "files": [
+      "test/*.spec.js"
+    ]
   }
 }
