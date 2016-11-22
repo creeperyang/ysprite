@@ -1,30 +1,32 @@
-import program, { Command } from 'commander';
-import colors from 'colors';
+const colors = require('colors')
+const program = require('commander')
+const Command = program.Command
 
-const humanReadableArgName = (arg) => {
-    let nameOutput = arg.name + (arg.variadic === true ? '...' : '');
-    return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']';
-};
+const humanReadableArgName = arg => {
+    let nameOutput = arg.name + (arg.variadic === true ? '...' : '')
+    return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']'
+}
 
 const pad = (str, width) => {
-    let len = Math.max(0, width - str.length);
-    return str + Array(len + 1).join(' ');
-};
+    const len = Math.max(0, width - str.length)
+    return str + Array(len + 1).join(' ')
+}
 
 Command.prototype.commandHelp = function() {
-    if (!this.commands.length) return '';
+    if (!this.commands.length) return ''
 
-    let commands = this.commands.filter((cmd) => {
-        return !cmd._noHelp;
-    }).map((cmd) => {
+    let commands = this.commands.filter(cmd => {
+        return !cmd._noHelp
+    }).map(cmd => {
         let args = cmd._args.map(function(arg) {
-            return humanReadableArgName(arg);
-        }).join(' ');
+            return humanReadableArgName(arg)
+        }).join(' ')
 
         return [
-            colors.green(cmd._name + (cmd._alias ? '|' + cmd._alias : '') + (cmd.options.length ? ' [options]' : '') + ' ' + args), colors.grey(cmd.description())
-        ];
-    });
+            colors.green(cmd._name + (cmd._alias ? '|' + cmd._alias : '') + (cmd.options.length ? ' [options]' : '') + ' ' + args),
+            colors.grey(cmd.description())
+        ]
+    })
 
     let width = commands.reduce(function(max, command) {
         return Math.max(max, command[0].length);
@@ -80,4 +82,4 @@ Command.prototype.helpInformation = function() {
         .join('\n');
 };
 
-export default program;
+module.exports = program

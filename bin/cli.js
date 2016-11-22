@@ -1,18 +1,11 @@
-import { relative, isAbsolute } from 'path';
-import colors from 'colors';
-import program from './command';
-import { generateSprite, generateStyle } from '../src';
-import pkg from '../package.json';
+#!/usr/bin/env node
 
-/**
- * parse regexp from string
- * @param  {String} str regexp text, like "icons\\w*\.png,i" (/icons\w*.png/i)
- * @return {RegExp}     transformed regexp
- */
-const parseRegexp = (str) => {
-    const r = /([\s\S]+),([igm]{1,3})$/.exec(str);
-    return r ? new RegExp(r[1], r[2]) : new RegExp(str);
-};
+const { relative, isAbsolute } = require('path')
+const colors = require('colors')
+const minimatch = require('minimatch')
+const program = require('./command')
+const { generateSprite, generateStyle } = require('../lib')
+const pkg = require('../package.json')
 
 const exitCli = (code = 0) => {
     process.exit(code);
@@ -30,8 +23,8 @@ program
     .option('--compression <level>', 'set png compression level. one of ["none", "fast", "high"], defaults to "high"',
         /none|fast|high/, 'high')
     .option('--margin [number]', 'set margin between images. defaults to 0, prefer even number', parseInt)
-    .option('--filter [regexp]', 'set normal image filter.', parseRegexp)
-    .option('--retina-filter [regexp]', 'set retina image filter.', parseRegexp)
+    .option('--filter [glob]', 'set normal image filter.')
+    .option('--retina-filter [glob]', 'set retina image filter.')
     .option('--arrangement [arrange]', 'set arrangement of images. one of ["compact", "vertical", "horizontal"], defaults to "compact"',
         /^(compact|vertical|horizontal)$/i, 'compact')
     .option('--style-prefix [prefix]', 'set style className prefix, defaults to "icon"')
@@ -43,20 +36,24 @@ program
     .option('--no-style', 'disable generate style');
 
 program.on('--help', () => {
-    console.log('  Examples:'.green);
-    console.log('');
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --output-retina img/sprite@2x.png --style-path css/sprite.css --compression high --margin 10'.grey);
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --no-retina --no-style'.grey);
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey);
-    console.log('');
-    console.log('');
-    console.log(`  Author: ${pkg.author}`.rainbow);
-});
+    console.log('  Examples:'.green)
+    console.log('')
+    console.log('    $ ysprite -s img/icons -o img/sprite.png --output-retina img/sprite@2x.png --style-path css/sprite.css --compression high --margin 10'.grey)
+    console.log('    $ ysprite -s img/icons -o img/sprite.png --no-retina --no-style'.grey)
+    console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey)
+    console.log('')
+    console.log('')
+    console.log(`  Author: `.green + pkg.author.bold)
+})
 
-program.parse(process.argv);
+program.parse(process.argv)
 
-const { retina, interlaced, margin, filter, retinaFilter, style, compression, output, outputRetina, source,
-    stylePath, styleBanner, stylePrefix, styleSuffix, styleConnector, arrangement } = program;
+const {
+    retina, interlaced, margin, filter, retinaFilter,
+    style, compression, output, outputRetina, source,
+    stylePath, styleBanner, stylePrefix, styleSuffix,
+    styleConnector, arrangement
+} = program
 
 if (program.rawArgs.length === 2) {
     console.log('');
@@ -85,14 +82,10 @@ const spriteOpts = {
 };
 
 if (filter) {
-    spriteOpts.filter = (filename) => {
-        return filter.test(filename);
-    };
+    spriteOpts.filter = filename => minimatch(filename, filter)
 }
 if (retinaFilter) {
-    spriteOpts.retinaFilter = (filename) => {
-        return retinaFilter.test(filename);
-    };
+    spriteOpts.retinaFilter = filename => minimatch(filename, retinaFilter)
 }
 
 const styleOpts = {
