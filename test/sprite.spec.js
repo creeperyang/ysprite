@@ -1,8 +1,8 @@
 const { basename } = require('path')
 const test = require('ava')
 const tempfile = require('tempfile')
-const { mergeImage, generateStyle, generateSprite } = require('../src/index')
-const { read } = require('../src/lib/fs-promise')
+const { mergeImage, generateStyle, generateSprite } = require('../lib/index')
+const { read } = require('../lib/fs-promise')
 
 
 function genConfig(retina, margin) {

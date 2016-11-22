@@ -1,5 +1,5 @@
 const test = require('ava')
-const Packer = require('../src/lib/packer')
+const Packer = require('../lib/packer')
 
 const rects = [{
     width: 30,
