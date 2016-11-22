@@ -1,10 +1,7 @@
 node_modules
 .bin
-_*
 .DS_Store
-*.log
-/index.js
-coverage
-test/res/sprite*.*
-test/res/style_*
 .tmp
+.nyc_output
+*.log
+coverage
