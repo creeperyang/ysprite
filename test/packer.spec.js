@@ -17,7 +17,7 @@ const rects = [{
 
 // sort
 test('Packer#sort should sort rects with max side', t => {
-    const sorted = Packer.sort(rects, 'maxSide');
+    const sorted = Packer.sort(rects, 'maxSide')
     t.deepEqual(sorted, [{
         width: 120,
         height: 120
@@ -33,7 +33,7 @@ test('Packer#sort should sort rects with max side', t => {
     }])
 })
 test('Packer#sort should sort rects with area', t => {
-    const sorted = Packer.sort(rects, 'area');
+    const sorted = Packer.sort(rects, 'area')
     t.deepEqual(sorted, [{
         width: 120,
         height: 120
@@ -47,9 +47,9 @@ test('Packer#sort should sort rects with area', t => {
         width: 30,
         height: 60
     }])
-});
+})
 test('Packer#sort should sort rects with width', t => {
-    const sorted = Packer.sort(rects, 'width');
+    const sorted = Packer.sort(rects, 'width')
     t.deepEqual(sorted, [{
         width: 120,
         height: 120
@@ -63,9 +63,9 @@ test('Packer#sort should sort rects with width', t => {
         width: 30,
         height: 60
     }])
-});
+})
 test('Packer#sort should sort rects with height', t => {
-    const sorted = Packer.sort(rects, 'height');
+    const sorted = Packer.sort(rects, 'height')
     t.deepEqual(sorted, [{
         width: 120,
         height: 120
@@ -78,21 +78,20 @@ test('Packer#sort should sort rects with height', t => {
     }, {
         width: 40,
         height: 50
-    }]);
-});
+    }])
+})
 test('Packer#sort should not sort rects if not set sort type', t => {
     const sorted = Packer.sort(rects)
     t.is(sorted, rects)
-});
-
+})
 
 // verticalPack/horizontalPack
 test('Packer#verticalPack should correctly pack rects vertically', t => {
-    const pack = Packer.verticalPack(rects);
+    const pack = Packer.verticalPack(rects)
     t.deepEqual(pack, {
         width: 120,
         height: 280
-    });
+    })
     t.deepEqual(rects, [
         {
             width: 120,
@@ -130,11 +129,11 @@ test('Packer#verticalPack should correctly handle invalid rects', t => {
     t.is(pack, false)
 })
 test('Packer#horizontalPack should correctly pack rects horizontally', t => {
-    const pack = Packer.horizontalPack(rects);
+    const pack = Packer.horizontalPack(rects)
     t.deepEqual(pack, {
         width: 290,
         height: 120
-    });
+    })
     t.deepEqual(rects, [
         {
             width: 120,
@@ -187,11 +186,13 @@ test('Packer#pack should correctly pack rects compactly', t => {
         width: 40,
         height: 50
     }]
-    const { right, down, ...root } = new Packer().pack(sorted)
+    const root = new Packer().pack(sorted)
+    delete root.right
+    delete root.down
     sorted.forEach(({ pack }) => {
-        delete pack.right;
-        delete pack.down;
-        delete pack.used;
+        delete pack.right
+        delete pack.down
+        delete pack.used
     })
     t.deepEqual(root, {
         x: 0,
@@ -199,7 +200,7 @@ test('Packer#pack should correctly pack rects compactly', t => {
         used: true,
         width: 220,
         height: 120
-    });
+    })
     t.deepEqual(sorted, [
         {
             width: 120,

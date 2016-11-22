@@ -1,9 +1,9 @@
 const { join } = require('path')
 const test = require('ava')
 const tempfile = require('tempfile')
-const { list, read, write, mkdir, exist, copy } = require('../lib/fs-promise')
+const { list, read, write, mkdir, exist } = require('../lib/fs-promise')
 
-const rootDir = process.cwd() + '/test/res/icons';
+const rootDir = process.cwd() + '/test/res/icons'
 const tmpDir = tempfile()
 
 // list

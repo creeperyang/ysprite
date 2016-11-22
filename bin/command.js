@@ -12,13 +12,13 @@ const pad = (str, width) => {
     return str + Array(len + 1).join(' ')
 }
 
-Command.prototype.commandHelp = function() {
+Command.prototype.commandHelp = function () {
     if (!this.commands.length) return ''
 
     let commands = this.commands.filter(cmd => {
         return !cmd._noHelp
     }).map(cmd => {
-        let args = cmd._args.map(function(arg) {
+        let args = cmd._args.map(arg => {
             return humanReadableArgName(arg)
         }).join(' ')
 
@@ -28,58 +28,58 @@ Command.prototype.commandHelp = function() {
         ]
     })
 
-    let width = commands.reduce(function(max, command) {
-        return Math.max(max, command[0].length);
-    }, 0);
+    let width = commands.reduce((max, command) => {
+        return Math.max(max, command[0].length)
+    }, 0)
 
     return [
-        '', colors.green('  Commands:'), '', commands.map(function(cmd) {
-            let desc = cmd[1] ? '  ' + cmd[1] : '';
-            return pad(cmd[0], width) + desc;
+        '', colors.green('  Commands:'), '', commands.map(cmd => {
+            let desc = cmd[1] ? '  ' + cmd[1] : ''
+            return pad(cmd[0], width) + desc
         }).join('\n').replace(/^/gm, '    '), ''
-    ].join('\n');
-};
+    ].join('\n')
+}
 
-Command.prototype.optionHelp = function() {
-    let width = this.largestOptionLength();
+Command.prototype.optionHelp = function () {
+    let width = this.largestOptionLength()
 
     // Prepend the help information
     return [colors.green(pad('-h, --help', width)) + '  ' + colors.grey('output usage information')]
-        .concat(this.options.map(function(option) {
-            return colors.green(pad(option.flags, width)) + '  ' + colors.grey(option.description);
+        .concat(this.options.map(option => {
+            return colors.green(pad(option.flags, width)) + '  ' + colors.grey(option.description)
         }))
-        .join('\n');
-};
+        .join('\n')
+}
 
-Command.prototype.helpInformation = function() {
-    let desc = [];
+Command.prototype.helpInformation = function () {
+    let desc = []
     if (this._description) {
         desc = [
             colors.grey('  ' + this._description), ''
-        ];
+        ]
     }
 
-    let cmdName = this._name;
+    let cmdName = this._name
     if (this._alias) {
-        cmdName = cmdName + '|' + this._alias;
+        cmdName = cmdName + '|' + this._alias
     }
     let usage = [
         '', colors.green('  Usage: ' + cmdName + ' ' + this.usage()), ''
-    ];
+    ]
 
-    let cmds = [];
-    let commandHelp = this.commandHelp();
-    if (commandHelp) cmds = [commandHelp];
+    let cmds = []
+    let commandHelp = this.commandHelp()
+    if (commandHelp) cmds = [commandHelp]
 
     let options = [
         colors.green('  Options:'), '', '' + this.optionHelp().replace(/^/gm, '    '), '', ''
-    ];
+    ]
 
     return usage
         .concat(cmds)
         .concat(desc)
         .concat(options)
-        .join('\n');
-};
+        .join('\n')
+}
 
 module.exports = program

@@ -1,11 +1,10 @@
 const { basename } = require('path')
 const test = require('ava')
 const tempfile = require('tempfile')
-const { mergeImage, generateStyle, generateSprite } = require('../lib/index')
+const { generateStyle, generateSprite } = require('../lib/index')
 const { read } = require('../lib/fs-promise')
 
-
-function genConfig(retina, margin) {
+function genConfig (retina, margin) {
     const imagePath = tempfile('.png')
     const retinaImagePath = imagePath.replace(/\.png$/, '@2x.png')
     const stylePath = tempfile('.css')
@@ -25,7 +24,7 @@ function genConfig(retina, margin) {
     return { spriteOpts, styleOpts, imgDir: 'test/res/icons' }
 }
 
-function doTest(t, retina, margin = 0, name, aSpriteOpts = {}) {
+function doTest (t, retina, margin = 0, name, aSpriteOpts = {}) {
     const { spriteOpts, styleOpts, imgDir } = genConfig(retina, margin)
     return generateSprite(imgDir, Object.assign(aSpriteOpts, spriteOpts)).then(data => {
         return generateStyle(data[0].source, styleOpts)
@@ -77,8 +76,8 @@ test('sprite with different compression level', t => {
     const { spriteOpts, styleOpts, imgDir } = genConfig(false, 0)
     return generateSprite(imgDir, Object.assign({
         compression: 'none',
-        filter(filepath) {
-            return !/@2x.png/.test(filepath);
+        filter (filepath) {
+            return !/@2x.png/.test(filepath)
         }
     }, spriteOpts)).then(data => {
         return Promise.all([
@@ -95,8 +94,8 @@ test('sprite with different compression level', t => {
 test('sprite without retina', t => {
     const { spriteOpts, styleOpts, imgDir } = genConfig(false, 0)
     return generateSprite(imgDir, Object.assign({
-        filter(filepath) {
-            return !/@2x.png/.test(filepath);
+        filter (filepath) {
+            return !/@2x.png/.test(filepath)
         }
     }, spriteOpts)).then(data => {
         return Promise.all([

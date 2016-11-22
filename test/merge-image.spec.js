@@ -1,4 +1,3 @@
-const fs = require('fs')
 const test = require('ava')
 const tempfile = require('tempfile')
 const mergeImage = require('../lib/image')

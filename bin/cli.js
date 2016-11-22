@@ -8,11 +8,10 @@ const { generateSprite, generateStyle } = require('../lib')
 const pkg = require('../package.json')
 
 const exitCli = (code = 0) => {
-    process.exit(code);
-};
-const logOk = (msg) => console.log(colors.green(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
-const logErr = (msg) => console.log(colors.red(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
-
+    process.exit(code)
+}
+const logOk = msg => console.log(colors.green(`[${new Date().toTimeString().slice(0, 8)}]`), msg)
+const logErr = msg => console.log(colors.red(`[${new Date().toTimeString().slice(0, 8)}]`), msg)
 
 program
     .version(pkg.version)
@@ -33,7 +32,7 @@ program
     .option('--style-banner', 'enable style banner, defaults to false')
     .option('--no-interlaced', 'disable png interlace')
     .option('-R, --no-retina', 'disable retina mode.')
-    .option('--no-style', 'disable generate style');
+    .option('--no-style', 'disable generate style')
 
 program.on('--help', () => {
     console.log('  Examples:'.green)
@@ -56,19 +55,18 @@ const {
 } = program
 
 if (program.rawArgs.length === 2) {
-    console.log('');
-    console.log(`★★★★★  ysprite@v${pkg.version}  ★★★★★`.green);
-    console.log('');
-    exitCli();
+    console.log('')
+    console.log(`★★★★★  ysprite@v${pkg.version}  ★★★★★`.green)
+    console.log('')
+    exitCli()
 } else if (!source || !output || (!stylePath && style)) {
-    console.log('');
-    console.log('Options of (source, output, style-path) are all reuiqred.'.red);
-    console.log('');
-    console.log('Run [ysprite --help] for more info.'.grey);
-    console.log('');
-    exitCli();
+    console.log('')
+    console.log('Options of (source, output, style-path) are all reuiqred.'.red)
+    console.log('')
+    console.log('Run [ysprite --help] for more info.'.grey)
+    console.log('')
+    exitCli()
 }
-
 
 // set sprite options and style options
 const spriteOpts = {
@@ -79,7 +77,7 @@ const spriteOpts = {
     dest: output,
     retinaDest: outputRetina,
     arrangement: typeof arrangement === 'string' ? arrangement : 'compact'
-};
+}
 
 if (filter) {
     spriteOpts.filter = filename => minimatch(filename, filter)
@@ -93,32 +91,33 @@ const styleOpts = {
     imagePath: output,
     retinaImagePath: outputRetina,
     banner: !!styleBanner
-};
+}
 
 // start to sprite and style
-logOk('Start generate sprite.');
-generateSprite(source, spriteOpts).then((data) => {
-    let retinaPath = '';
+logOk('Start generate sprite.')
+generateSprite(source, spriteOpts).then(data => {
+    let retinaPath = ''
     if (data[1]) {
-        retinaPath = outputRetina ? outputRetina : isAbsolute(output) ? data[1].merged.path :
-            relative(process.cwd(), data[1].merged.path);
-        retinaPath = 'retina -> ' + retinaPath;
+        retinaPath = outputRetina || (
+            isAbsolute(output) ? data[1].merged.path : relative(process.cwd(), data[1].merged.path)
+        )
+        retinaPath = 'retina -> ' + retinaPath
     }
-    logOk(`Finish.  Sprite path: normal -> ${output}  ${retinaPath}`);
-    if (!style) return;
+    logOk(`Finish.  Sprite path: normal -> ${output}  ${retinaPath}`)
+    if (!style) return
 
-    console.log('');
-    logOk('Start generate style.');
-    typeof stylePrefix === 'string' && (styleOpts.prefix = stylePrefix);
-    typeof styleConnector === 'string' && (styleOpts.connector = styleConnector);
-    typeof styleSuffix === 'string' && (styleOpts.suffix = styleSuffix);
-    return generateStyle(data[0].source, styleOpts);
-}, (err) => {
-    logErr('Failed generate sprite:');
-    console.error(err.stack ? err.stack : err);
-}).then((data) => {
-    data && logOk(`Finish.  Style path: ${stylePath}`);
-}, (err) => {
-    logErr('Failed generate style:');
-    console.error(err.stack ? err.stack : err);
-});
+    console.log('')
+    logOk('Start generate style.')
+    typeof stylePrefix === 'string' && (styleOpts.prefix = stylePrefix)
+    typeof styleConnector === 'string' && (styleOpts.connector = styleConnector)
+    typeof styleSuffix === 'string' && (styleOpts.suffix = styleSuffix)
+    return generateStyle(data[0].source, styleOpts)
+}, err => {
+    logErr('Failed generate sprite:')
+    console.error(err.stack ? err.stack : err)
+}).then(data => {
+    data && logOk(`Finish.  Style path: ${stylePath}`)
+}, err => {
+    logErr('Failed generate style:')
+    console.error(err.stack ? err.stack : err)
+})
