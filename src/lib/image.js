@@ -1,9 +1,9 @@
-import { dirname } from 'path';
-import lwip from 'lwip';
-import Packer from './packer';
-import { mkdir, exist } from './fs-promise';
+const { dirname } = require('path')
+const lwip = require('lwip')
+const Packer = require('./packer')
+const { mkdir, exist } = require('./fs-promise')
 
-const transparent = [0, 0, 0, 0];
+const transparent = [0, 0, 0, 0]
 
 /**
  * open image from file
@@ -12,21 +12,21 @@ const transparent = [0, 0, 0, 0];
  * @return {Object}          promise
  */
 const openImage = (filepath, padding) => {
-    padding = ~~padding;
+    padding = ~~padding
     return new Promise((resolve, reject) => {
         lwip.open(filepath, (err, image) => {
-            if (err) return reject(err);
+            if (err) return reject(err)
             if (padding) {
                 image.pad(padding, padding, padding, padding, transparent, (err, image) => {
-                    err ? reject(err) : (image.filepath = filepath, resolve(image));
-                });
+                    err ? reject(err) : (image.filepath = filepath, resolve(image))
+                })
             } else {
-                image.filepath = filepath;
-                resolve(image);
+                image.filepath = filepath
+                resolve(image)
             }
-        });
-    });
-};
+        })
+    })
+}
 
 /**
  * create a new blank image
@@ -38,10 +38,10 @@ const openImage = (filepath, padding) => {
 const createImage = (width, height, color = transparent) => {
     return new Promise((resolve, reject) => {
         lwip.create(width, height, color, (err, image) => {
-            err ? reject(err) : resolve(image);
-        });
-    });
-};
+            err ? reject(err) : resolve(image)
+        })
+    })
+}
 
 /**
  * append source image to target image
@@ -56,11 +56,11 @@ const createImage = (width, height, color = transparent) => {
 const appendImage = (batch, image, left, top, width, height) => {
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            batch.setPixel(left + x, top + y, image.getPixel(x, y));
+            batch.setPixel(left + x, top + y, image.getPixel(x, y))
         }
     }
-    return batch;
-};
+    return batch
+}
 
 /**
  * save image to file
@@ -71,24 +71,17 @@ const appendImage = (batch, image, left, top, width, height) => {
  * @return {Object}          promise
  */
 const writeImage = (image, filepath, format, params) => {
-    const dir = dirname(filepath);
-    const ensureDir = async (path) => {
-        let isExist;
-        try {
-            isExist = await exist(path);
-        } catch (e) {}
-        if (!isExist) {
-            await mkdir(path);
-        }
-    };
+    const dir = dirname(filepath)
     return new Promise((resolve, reject) => {
-        ensureDir(dir).then(() => {
-            image.writeFile(filepath, format, params, (err, image) => {
-                err ? reject(err) : resolve(image);
-            });
-        }).catch((err) => reject(err));
-    });
-};
+        exist(filepath).then(() => {}).catch(err => {
+            return mkdir(dir)
+        }).then(() => {
+            return image.writeFile(filepath, format, params, (err, image) => {
+                err ? reject(err) : resolve(image)
+            })
+        }).catch(err => reject(err))
+    })
+}
 
 /**
  * merge images
@@ -101,52 +94,61 @@ const writeImage = (image, filepath, format, params) => {
  *                                     interlaced {Boolean} enable png interlaced
  * @return {Object}                promise
  */
-async function mergeImage(sourceImgPaths, mergedImgPath, options = {}) {
+function mergeImage (sourceImgPaths, mergedImgPath, options = {}) {
     if (!sourceImgPaths || !sourceImgPaths.length || typeof mergedImgPath !== 'string') {
-        throw new Error('invalid sourceImgPaths or mergedImgPath');
+        return Promise.reject('invalid sourceImgPaths or mergedImgPath')
     }
-    sourceImgPaths = [].concat(sourceImgPaths).map((item) => item + '');
-    const margin = ~~options.margin;
-    let images = await Promise.all(sourceImgPaths.map((filepath) => openImage(filepath, margin / 2)));
-    let rects = images.map((image, index) => {
-        let width = image.width();
-        let height = image.height();
-        return { width, height, image };
-    });
-    let pack;
-    switch (options.arrangement) {
-        case 'vertical':
-            pack = Packer.verticalPack(rects);
-            break;
-        case 'horizontal':
-            pack = Packer.horizontalPack(rects);
-            break;
-        case 'compact':
-        default:
-            pack = new Packer().pack(Packer.sort(rects, 'maxSide'));
-    }
-    let mergedImage = await createImage(pack.width, pack.height);
-    let batch = mergedImage.batch();
-    rects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
-        return appendImage(preBatch, image, x, y, width, height);
-    }, batch);
-    await writeImage(batch, mergedImgPath, 'png', {
-        compression: options.compression || 'high',
-        interlaced: !!options.interlaced,
-        transparency: true
-    });
-    return {
-        source: rects.map(({ pack: { x, y }, width, height, image }) => {
-            return { x, y, margin, width, height, path: image.filepath };
-        }),
-        merged: {
-            path: mergedImgPath,
-            image: mergeImage,
-            width: pack.width,
-            height: pack.height
-        }
-    };
-};
+    sourceImgPaths = [].concat(sourceImgPaths).map(item => item + '')
+    const margin = ~~options.margin
+    let calcRects, calcPack
+    return Promise.all(sourceImgPaths.map(filepath => openImage(filepath, margin / 2)))
+        .then(images => {
+            return images.map((image, index) => {
+                const width = image.width()
+                const height = image.height()
+                return { width, height, image }
+            })
+        })
+        .then(rects => {
+            calcRects = rects
+            switch (options.arrangement) {
+                case 'vertical':
+                    calcPack = Packer.verticalPack(rects)
+                    break
+                case 'horizontal':
+                    calcPack = Packer.horizontalPack(rects)
+                    break
+                case 'compact':
+                default:
+                    calcPack = new Packer().pack(Packer.sort(rects, 'maxSide'))
+            }
+            return createImage(calcPack.width, calcPack.height)
+        }).then(mergedImage => {
+            let batch = mergedImage.batch()
+            calcRects.reduce((preBatch, { pack: { x, y }, width, height, image }) => {
+                return appendImage(preBatch, image, x, y, width, height)
+            }, batch)
+            return [mergedImage, batch]
+        }).then(([mergedImage, batch]) => {
+            return writeImage(batch, mergedImgPath, 'png', {
+                compression: options.compression || 'high',
+                interlaced: !!options.interlaced,
+                transparency: true
+            })
+        }).then(() => {
+            return {
+                source: calcRects.map(({ pack: { x, y }, width, height, image }) => {
+                    return { x, y, margin, width, height, path: image.filepath }
+                }),
+                merged: {
+                    path: mergedImgPath,
+                    image: mergeImage,
+                    width: calcPack.width,
+                    height: calcPack.height
+                }
+            }
+        })
+}
 
-export default mergeImage;
-export { mergeImage };
+exports = module.exports = mergeImage
+exports.mergeImage = mergeImage

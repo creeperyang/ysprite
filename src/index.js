@@ -1,14 +1,14 @@
-import { list } from './lib/fs-promise';
-import { mergeImage } from './lib/image';
-import { getAbsolutePath, notInArray } from './lib/util';
-import generateStyle from './lib/style';
+const { list } = require('./lib/fs-promise')
+const { mergeImage } = require('./lib/image')
+const { getAbsolutePath, notInArray } = require('./lib/util')
+const generateStyle = require('./lib/style')
 
 /**
  * default filter to select retina image path
  * @param  {String} filepath file path
  * @return {Boolean}         if is retina image
  */
-const retinaFilter = (filepath) => /@2x/.test(filepath);
+const retinaFilter = filepath => /@2x/.test(filepath)
 
 /**
  * generate sprite
@@ -25,31 +25,42 @@ const retinaFilter = (filepath) => /@2x/.test(filepath);
            {String}       options.arrangement    arrangement of images: 'vertical'|'horizontal'|'compact'
  * @return {Object}                              promise
  */
-const generateSprite = async (sourceList, options) => {
+function generateSprite (sourceList, options) {
     if (!sourceList || !sourceList.length || !options) {
-        throw new Error('invalid arguments');
-    }
-    if (typeof sourceList === 'string') {
-        sourceList = await list(getAbsolutePath(sourceList), ['{*/*,*}.png']);
+        return Promise.reject('invalid arguments');
     }
     let retina = options.retina;
     if (options.retinaFilter && retina === undefined) {
         retina = true;
     }
-    let promises = [], normalImages, retinaImages;
-    if (retina) {
-        retinaImages = sourceList.filter(options.retinaFilter || retinaFilter);
-        promises.push(mergeImage(retinaImages, getAbsolutePath(options.retinaDest ||
-            options.dest.replace(/\.png$/i, '@2x.png')), { ...options, margin: options.margin * 2 }));
-        normalImages = sourceList.filter(options.filter ?
-            options.filter : notInArray(retinaImages));
+    let promises = [], normalImages, retinaImages, promise
+    if (typeof sourceList === 'string') {
+        promise = list(getAbsolutePath(sourceList), options.glob || ['{*/*,*}.png'])
     } else {
-        normalImages = sourceList.filter(options.filter ?
-            options.filter : () => true);
+        promise = Promise.resolve(sourceList)
     }
-    promises.unshift(mergeImage(normalImages, getAbsolutePath(options.dest), options));
-    return Promise.all(promises);
+    return promise.then(sourceList => {
+        if (retina) {
+            retinaImages = sourceList.filter(options.retinaFilter || retinaFilter)
+            promises.push(mergeImage(
+                retinaImages,
+                getAbsolutePath(options.retinaDest || options.dest.replace(/\.png$/i, '@2x.png')),
+                Object.assign({}, options, { margin: options.margin * 2 })
+            ))
+            normalImages = sourceList.filter(
+                options.filter ? options.filter : notInArray(retinaImages)
+            )
+        } else {
+            normalImages = sourceList.filter(
+                options.filter ? options.filter : () => true
+            )
+        }
+        promises.unshift(mergeImage(normalImages, getAbsolutePath(options.dest), options))
+        return Promise.all(promises)
+    })
 };
 
-export default generateSprite;
-export { generateStyle, mergeImage, generateSprite };
+exports = module.exports = generateSprite
+exports.generateStyle = generateStyle
+exports.generateSprite = generateSprite
+exports.mergeImage = mergeImage
