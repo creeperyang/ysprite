@@ -1,7 +1,8 @@
-import { readFile, writeFile, access } from 'fs';
-import { parse, resolve as resolvePath } from 'path';
-import glob from 'glob-all';
-import mkdirp from 'mkdirp';
+const { readFile, writeFile, access } = require('fs')
+const { parse, resolve } = require('path')
+const glob = require('glob-all')
+const mkdirp = require('mkdirp')
+const resolvePath = resolve
 
 /**
  * list files of specific dir
@@ -10,37 +11,40 @@ import mkdirp from 'mkdirp';
  * @return {Object}         promise
  */
 const list = (root, pattern = ['*.*']) => {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         glob(pattern, root ? {
             cwd: root
-        } : {}, (err, data) =>  err ? reject(err) : resolve(root ?
-            data.map((file) => resolvePath(root, file)) : data));
-    });
-};
+        } : {}, (err, data) => {
+            return err ? reject(err) : resolve(
+                root ? data.map(file => resolvePath(root, file)) : data
+            )
+        })
+    })
+}
 
 /**
  * read file content
  * @param  {String} filename file path
  * @return {Object}          promise
  */
-const read = (filename) => {
+const read = filename => {
     return new Promise((resolve, reject) => {
         readFile(filename, {
             encoding: 'utf8'
-        }, (err, result) => err ? reject(err) : resolve(result));
-    });
-};
+        }, (err, result) => err ? reject(err) : resolve(result))
+    })
+}
 
 /**
  * exist path or not
  * @param  {String} filename path
  * @return {Object}          promise
  */
-const exist = (filename) => {
+const exist = filename => {
     return new Promise((resolve, reject) => {
-        access(filename, err => err ? reject(err) : resolve());
-    });
-};
+        access(filename, err => err ? reject(err) : resolve())
+    })
+}
 
 /**
  * write content to file
@@ -51,27 +55,28 @@ const exist = (filename) => {
  */
 const write = (filename, content, createDirIfNotExists) => {
     return new Promise((resolve, reject) => {
-        let dir = createDirIfNotExists && filename && parse(filename).dir;
+        let dir = createDirIfNotExists && filename && parse(filename).dir
         let promise = createDirIfNotExists ? exist(dir).catch(() => {
-            return mkdir(dir);
-        }) : Promise.resolve(null);
-        promise.then(() => {
-            writeFile(filename, content, {
-                encoding: 'utf8'
-            }, (err) => err ? reject(err) : resolve());
-        });
-    });
-};
+            return mkdir(dir)
+        }) : Promise.resolve(null)
+        promise.then(() => writeFile(
+            filename,
+            content,
+            { encoding: 'utf8' },
+            err => err ? reject(err) : resolve(filename)
+        ))
+    })
+}
 
 /**
  * create dir
  * @param  {String} dir dir
  * @return {Object}     promise
  */
-const mkdir = (dir) => {
+const mkdir = dir => {
     return new Promise((resolve, reject) => {
-        mkdirp(dir, (err) => err ? reject(err) : resolve());
-    });
-};
+        mkdirp(dir, err => err ? reject(err) : resolve())
+    })
+}
 
-export { list, read, write, mkdir, exist };
+module.exports = { list, read, write, mkdir, exist }
