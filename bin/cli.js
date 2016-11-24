@@ -42,7 +42,7 @@ program.on('--help', () => {
     console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey)
     console.log('')
     console.log('')
-    console.log(`  Author: `.green + pkg.author.bold)
+    console.log(`  ★★★★★  created by ${pkg.author && pkg.author.name || 'yang'}  ★★★★★`.grey.bold)
 })
 
 program.parse(process.argv)

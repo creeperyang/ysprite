@@ -28,7 +28,10 @@
     "cli",
     "retina"
   ],
-  "author": "creeperyang <pashanhu6@hotmail.com>",
+  "author": {
+    "name": "creeperyang",
+    "email": "pashanhu6@hotmail.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/creeperyang/ysprite/issues"
