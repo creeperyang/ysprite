@@ -15,20 +15,20 @@ const logErr = msg => console.log(colors.red(`[${new Date().toTimeString().slice
 
 program
     .version(pkg.version)
-    .option('-s, --source [path]', 'required, set source images dir')
-    .option('-o, --output [path]', 'required, set sprite image path')
+    .option('-s, --source <path>', 'required, set source images dir')
+    .option('-o, --output <path>', 'required, set sprite image path')
+    .option('--style-path <path>', 'set style path. ok to with .less/scss extension')
     .option('--output-retina <path>', 'set retina sprite image path. defaults to same with normal path and add "@2x" to filename')
-    .option('--style-path [path]', 'set style path. ok to with .less/scss extension')
-    .option('--compression <level>', 'set png compression level. one of ["none", "fast", "high"], defaults to "high"',
+    .option('--compression [level]', 'set png compression level. one of ["none", "fast", "high"], defaults to "high"',
         /none|fast|high/, 'high')
-    .option('--margin [number]', 'set margin between images. defaults to 0, prefer even number', parseInt)
-    .option('--filter [glob]', 'set normal image filter.')
-    .option('--retina-filter [glob]', 'set retina image filter.')
+    .option('--margin <number>', 'set margin between images. defaults to 0, prefer even number', parseInt)
+    .option('--filter <glob>', 'set normal image filter.')
+    .option('--retina-filter <glob>', 'set retina image filter.')
     .option('--arrangement [arrange]', 'set arrangement of images. one of ["compact", "vertical", "horizontal"], defaults to "compact"',
         /^(compact|vertical|horizontal)$/i, 'compact')
-    .option('--style-prefix [prefix]', 'set style className prefix, defaults to "icon"')
-    .option('--style-connector [connector]', 'set style className connector, defaults to "-"')
-    .option('--style-suffix [suffix]', 'set style className suffix, defaults to ""')
+    .option('--style-prefix <prefix>', 'set style className prefix, defaults to "icon"')
+    .option('--style-connector <connector>', 'set style className connector, defaults to "-"')
+    .option('--style-suffix <suffix>', 'set style className suffix, defaults to ""')
     .option('--style-banner', 'enable style banner, defaults to false')
     .option('--no-interlaced', 'disable png interlace')
     .option('-R, --no-retina', 'disable retina mode.')
@@ -55,17 +55,17 @@ const {
 } = program
 
 if (program.rawArgs.length === 2) {
-    console.log('')
-    console.log(`★★★★★  ysprite@v${pkg.version}  ★★★★★`.green)
-    console.log('')
+    console.log()
+    console.log(`  ★★★★★  ysprite@v${pkg.version}  ★★★★★`.green)
+    console.log()
     exitCli()
 } else if (!source || !output || (!stylePath && style)) {
-    console.log('')
-    console.log('Options of (source, output, style-path) are all reuiqred.'.red)
-    console.log('')
-    console.log('Run [ysprite --help] for more info.'.grey)
-    console.log('')
-    exitCli()
+    console.log()
+    console.log('  error: options (source, output, style-path) are all reuiqred.'.red)
+    console.log()
+    console.log('  run [ysprite --help] for more info.'.grey)
+    console.log()
+    exitCli(1)
 }
 
 // set sprite options and style options
