@@ -37,6 +37,9 @@
     "url": "https://github.com/creeperyang/ysprite/issues"
   },
   "homepage": "https://github.com/creeperyang/ysprite#readme",
+  "engines": {
+    "node": ">=6"
+  },
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
