@@ -9,13 +9,13 @@
   "scripts": {
     "test-only": "ava",
     "test-ci": "nyc npm run test-only",
-    "test": "npm run test-only",
-    "lint": "eslint lib bin test"
+    "test": "npm run lint && npm run test-only",
+    "lint": "eslint lib bin test",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "files": [
-    "src",
-    ".bin",
-    "index.js"
+    "lib",
+    "bin"
   ],
   "repository": {
     "type": "git",
