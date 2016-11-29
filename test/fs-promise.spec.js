@@ -1,7 +1,7 @@
 const { join } = require('path')
 const test = require('ava')
 const tempfile = require('tempfile')
-const { list, read, write, mkdir, exist } = require('../lib/fs-promise')
+const { list, write, mkdir, exist } = require('../lib/fs-promise')
 
 const rootDir = process.cwd() + '/test/res/icons'
 const tmpDir = tempfile()
@@ -33,22 +33,14 @@ test('fs-promise#list should list all files with complex pattern', t => {
     }).catch(err => test.fail(err))
 })
 
-// write and read
+// write
 test('fs-promise#write should fail to write file if dir not exists and set createDirIfNotExists to false', t => {
-    t.throws(write(tmpDir + '/hi.txt', 'hi', false))
+    t.throws(write(tmpDir + '/hi.txt', 'hi', null, false))
 })
 test('fs-promise#write should write file successfully if dir not exists but set createDirIfNotExists to true', t => {
-    return write(tmpDir + '/hi.txt', 'hi', true).then(name => {
+    return write(tmpDir + '/hi.txt', 'hi', null, true).then(name => {
         t.is(name, tmpDir + '/hi.txt')
     })
-})
-test('fs-promise#read should read file successfully', t => {
-    return read('LICENSE').then(content => {
-        t.is(content.slice(0, 21), 'The MIT License (MIT)')
-    })
-})
-test('fs-promise#read should fail to read file if file not exists', t => {
-    t.throws(read(tmpDir + '/hi.md'))
 })
 
 // mkdir & exist
