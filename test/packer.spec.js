@@ -171,7 +171,10 @@ test('Packer#horizontalPack should correctly handle invalid rects', t => {
     t.is(pack, false)
 })
 
-// pack
+// pack/compactPack
+test('Packer#pack equals Packer#compactPack', t => {
+    t.is(Packer.pack, Packer.compactPack)
+})
 test('Packer#pack should correctly pack rects compactly', t => {
     const sorted = [{
         width: 120,
@@ -186,7 +189,9 @@ test('Packer#pack should correctly pack rects compactly', t => {
         width: 40,
         height: 50
     }]
-    const root = new Packer().pack(sorted)
+    const root = Packer.pack(sorted, true)
+    const root2 = Packer.pack(rects)
+    t.deepEqual(root, root2)
     delete root.right
     delete root.down
     sorted.forEach(({ pack }) => {
@@ -242,6 +247,6 @@ test('Packer#pack should correctly pack rects compactly', t => {
     ])
 })
 test('Packer#pack should correctly handle invalid rects', t => {
-    const pack = new Packer().pack()
+    const pack = Packer.pack()
     t.is(pack, false)
 })
