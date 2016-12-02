@@ -14,7 +14,7 @@ const pad = (str, width) => {
 
 Command.prototype.missingArgument = function (name) {
     console.error()
-    console.error("  error: missing required argument `%s'".red, name)
+    console.error("  error: missing required argument `%s'".red.bold, name)
     console.error()
     process.exit(1)
 }
@@ -22,9 +22,9 @@ Command.prototype.missingArgument = function (name) {
 Command.prototype.optionMissingArgument = function (option, flag) {
     console.error()
     if (flag) {
-        console.error("  error: option `%s' argument missing, got `%s'".red, option.flags, flag)
+        console.error("  error: option `%s' argument missing, got `%s'".red.bold, option.flags, flag)
     } else {
-        console.error("  error: option `%s' argument missing".red, option.flags)
+        console.error("  error: option `%s' argument missing".red.bold, option.flags)
     }
     console.error()
     process.exit(1)
@@ -33,14 +33,14 @@ Command.prototype.optionMissingArgument = function (option, flag) {
 Command.prototype.unknownOption = function (flag) {
     if (this._allowUnknownOption) return
     console.error()
-    console.error("  error: unknown option `%s'".red, flag)
+    console.error("  error: unknown option `%s'".red.bold, flag)
     console.error()
     process.exit(1)
 }
 
 Command.prototype.variadicArgNotLast = function (name) {
     console.error()
-    console.error("  error: variadic arguments must be last `%s'".red, name)
+    console.error("  error: variadic arguments must be last `%s'".red.bold, name)
     console.error()
     process.exit(1)
 }

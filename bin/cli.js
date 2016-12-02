@@ -5,6 +5,7 @@ const minimatch = require('minimatch')
 const program = require('./command')
 const ysprite = require('../lib')
 const pkg = require('../package.json')
+const Spinner = require('./spinner')
 
 const exitCli = (code = 0) => {
     process.exit(code)
@@ -34,9 +35,8 @@ program
 program.on('--help', () => {
     console.log('  Examples:'.green)
     console.log('')
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --output-retina img/sprite@2x.png --style-path css/sprite.css --compression high --margin 10'.grey)
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --no-retina --no-style'.grey)
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey)
+    console.log('    $ ysprite -s img/icons -o img/sprite.png --out-retina img/sprite@2x.png --out-style css/sprite.css --compression high --margin 10'.grey)
+    console.log(`    $ ysprite -s 'icons/**/*.png' -o tmp/sprite.png --no-retina --no-style`.grey)
     console.log('')
     console.log('')
     console.log(`  ★★★★★  created by ${pkg.author && pkg.author.name || 'yang'}  ★★★★★`.grey.bold)
@@ -58,7 +58,7 @@ if (program.rawArgs.length === 2) {
     exitCli()
 } else if (!verifyArgs()) {
     console.log()
-    console.log('  error: options (source, out-img, out-style) are all reuiqred.'.red)
+    console.error('  error: options (source, out-img, out-style) are all reuiqred.'.red.bold)
     console.log()
     console.log('  run [ysprite --help] for more info.'.grey)
     console.log()
@@ -71,6 +71,8 @@ function verifyArgs () {
 
     return true
 }
+
+const spinner = new Spinner()
 
 // set sprite options and style options
 const spriteOpts = {
@@ -104,10 +106,12 @@ const styleOpts = style ? {
 } : null
 
 // start to sprite and style
+spinner.start(' sprite...'.grey)
 ysprite(source, {
     sprite: spriteOpts,
     style: styleOpts
 }).then(res => {
+    spinner.stop()
     console.log()
     console.log('  Sprite successfully!'.green.bold)
     const msg = [
@@ -120,6 +124,9 @@ ysprite(source, {
     ]
     console.log(`  ${msg.join('')}`)
 }).catch(err => {
-    console.error('Sorry, some error occured.'.red.bold)
-    console.error(err)
+    spinner.stop()
+    console.log()
+    console.error('  Sorry, some error occurred.'.red.bold)
+    console.log()
+    console.error('  ' + err.toString().grey)
 })
