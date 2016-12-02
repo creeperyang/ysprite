@@ -1,43 +1,48 @@
 const { basename } = require('path')
+const { readFileSync } = require('fs')
 const test = require('ava')
 const tempfile = require('tempfile')
-const { generateStyle, generateSprite } = require('../lib/index')
-const { read } = require('../lib/fs-promise')
+const generateStyle = require('../lib/style')
+const generateSprite = require('../lib/sprite')
+const { list } = require('../lib/fs-promise')
 
-function genConfig (retina, margin) {
+let IMAGES
+function genConfig (retina, margin, filter) {
     const imagePath = tempfile('.png')
     const retinaImagePath = imagePath.replace(/\.png$/, '@2x.png')
     const stylePath = tempfile('.css')
     const spriteOpts = {
         retina,
-        dest: imagePath,
-        retinaDest: retinaImagePath,
-        margin
+        imagePath,
+        retinaImagePath,
+        filter: filter || '!**/*@2x.png',
+        margin,
+        writeToFile: true
     }
     const styleOpts = {
         retina,
         imagePath,
         retinaImagePath,
         stylePath,
-        banner: false
+        banner: false,
+        writeToFile: true
     }
-    return { spriteOpts, styleOpts, imgDir: 'test/res/icons' }
+    return { spriteOpts, styleOpts, images: IMAGES }
 }
 
 function doTest (t, retina, margin = 0, name, aSpriteOpts = {}) {
-    const { spriteOpts, styleOpts, imgDir } = genConfig(retina, margin)
-    return generateSprite(imgDir, Object.assign(aSpriteOpts, spriteOpts)).then(data => {
+    const { spriteOpts, styleOpts, images } = genConfig(retina, margin)
+    return generateSprite(images, Object.assign(aSpriteOpts, spriteOpts)).then(data => {
         return generateStyle(data[0].source, styleOpts)
     }).then(data => {
-        return Promise.all([
-            read(`test/res/expected/sprite_${name}.png`),
-            read(styleOpts.imagePath),
-            read(`test/res/expected/sprite_${name}@2x.png`),
-            read(styleOpts.retinaImagePath),
-            read(`test/res/expected/style_${name}.css`),
-            read(styleOpts.stylePath)
-        ])
-    }).then(files => {
+        const files = [
+            readFileSync(`test/res/expected/sprite_${name}.png`),
+            readFileSync(styleOpts.imagePath),
+            readFileSync(`test/res/expected/sprite_${name}@2x.png`),
+            readFileSync(styleOpts.retinaImagePath),
+            readFileSync(`test/res/expected/style_${name}.css`),
+            readFileSync(styleOpts.stylePath)
+        ]
         // check sprite image
         t.deepEqual(files[0], files[1])
         t.deepEqual(files[2], files[3])
@@ -48,9 +53,15 @@ function doTest (t, retina, margin = 0, name, aSpriteOpts = {}) {
             files[5].toString()
         )
     }).catch(err => {
-        t.fail(err)
+        t.fail(err && err.message)
     })
 }
+
+test.before(t => {
+    return list('.', ['test/res/icons/**/*.png']).then(images => {
+        IMAGES = images
+    })
+})
 
 test('sprite of "compact" type with margin', t => {
     return doTest(t, true, 10, 'compact_margin')
@@ -73,38 +84,36 @@ test('sprite of "horizontal" type', t => {
 })
 
 test('sprite with different compression level', t => {
-    const { spriteOpts, styleOpts, imgDir } = genConfig(false, 0)
-    return generateSprite(imgDir, Object.assign({
+    const { spriteOpts, styleOpts, images } = genConfig(false, 0)
+    return generateSprite(images, Object.assign({
         compression: 'none',
         filter (filepath) {
             return !/@2x.png/.test(filepath)
         }
     }, spriteOpts)).then(data => {
-        return Promise.all([
-            read(`test/res/expected/sprite_compact.png`),
-            read(styleOpts.imagePath)
-        ])
-    }).then(files => {
+        const files = [
+            readFileSync(`test/res/expected/sprite_compact.png`),
+            readFileSync(styleOpts.imagePath)
+        ]
         t.is(files[0].length < files[1].length, true)
     }).catch(err => {
-        t.fail(err)
+        t.fail(err && err.message)
     })
 })
 
 test('sprite without retina', t => {
-    const { spriteOpts, styleOpts, imgDir } = genConfig(false, 0)
-    return generateSprite(imgDir, Object.assign({
+    const { spriteOpts, styleOpts, images } = genConfig(false, 0)
+    return generateSprite(images, Object.assign({
         filter (filepath) {
             return !/@2x.png/.test(filepath)
         }
     }, spriteOpts)).then(data => {
-        return Promise.all([
-            read(`test/res/expected/sprite_compact.png`),
-            read(styleOpts.imagePath)
-        ])
-    }).then(files => {
+        const files = [
+            readFileSync(`test/res/expected/sprite_compact.png`),
+            readFileSync(styleOpts.imagePath)
+        ]
         t.deepEqual(files[0], files[1])
     }).catch(err => {
-        t.fail(err)
+        t.fail(err && err.message)
     })
 })

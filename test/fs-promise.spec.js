@@ -29,7 +29,7 @@ test('fs-promise#list should list all files with complex pattern', t => {
             'app@2x.png',
             'next-double-disable@2x.png',
             'next-double@2x.png'
-        ].map(v => join(rootDir, v)))
+        ])
     }).catch(err => test.fail(err))
 })
 
