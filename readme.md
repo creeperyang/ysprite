@@ -77,7 +77,7 @@ generateSprite(imagePathList, spriteOpts).then(data => {
     }
     ```
 
-##### sprite options
+**sprite options**
 
 ```js
 {
@@ -94,7 +94,7 @@ generateSprite(imagePathList, spriteOpts).then(data => {
 }
 ```
 
-##### style options
+**style options**
 
 ```js
 {
