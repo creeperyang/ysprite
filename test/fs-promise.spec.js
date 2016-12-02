@@ -1,4 +1,3 @@
-const { join } = require('path')
 const test = require('ava')
 const tempfile = require('tempfile')
 const { list, write, mkdir, exist } = require('../lib/fs-promise')

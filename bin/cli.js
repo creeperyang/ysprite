@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-const { relative, isAbsolute } = require('path')
-const colors = require('colors')
+const colors = require('colors') // eslint-disable-line
 const minimatch = require('minimatch')
 const program = require('./command')
 const ysprite = require('../lib')
-const { list } = require('../lib/fs-promise')
 const pkg = require('../package.json')
 
 const exitCli = (code = 0) => {

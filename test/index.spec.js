@@ -1,5 +1,3 @@
-const { basename } = require('path')
-const { readFileSync } = require('fs')
 const test = require('ava')
 const tempfile = require('tempfile')
 const ysprite = require('../lib')
