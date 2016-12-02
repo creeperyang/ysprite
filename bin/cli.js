@@ -1,131 +1,132 @@
-import { relative, isAbsolute } from 'path';
-import colors from 'colors';
-import program from './command';
-import { generateSprite, generateStyle } from '../src';
-import pkg from '../package.json';
+#!/usr/bin/env node
 
-/**
- * parse regexp from string
- * @param  {String} str regexp text, like "icons\\w*\.png,i" (/icons\w*.png/i)
- * @return {RegExp}     transformed regexp
- */
-const parseRegexp = (str) => {
-    const r = /([\s\S]+),([igm]{1,3})$/.exec(str);
-    return r ? new RegExp(r[1], r[2]) : new RegExp(str);
-};
+const colors = require('colors') // eslint-disable-line
+const minimatch = require('minimatch')
+const program = require('./command')
+const ysprite = require('../lib')
+const pkg = require('../package.json')
+const Spinner = require('./spinner')
 
 const exitCli = (code = 0) => {
-    process.exit(code);
-};
-const logOk = (msg) => console.log(colors.green(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
-const logErr = (msg) => console.log(colors.red(`[${new Date().toTimeString().slice(0, 8)}]`), msg);
-
+    process.exit(code)
+}
 
 program
     .version(pkg.version)
-    .option('-s, --source [path]', 'required, set source images dir')
-    .option('-o, --output [path]', 'required, set sprite image path')
-    .option('--output-retina <path>', 'set retina sprite image path. defaults to same with normal path and add "@2x" to filename')
-    .option('--style-path [path]', 'set style path. ok to with .less/scss extension')
-    .option('--compression <level>', 'set png compression level. one of ["none", "fast", "high"], defaults to "high"',
-        /none|fast|high/, 'high')
-    .option('--margin [number]', 'set margin between images. defaults to 0, prefer even number', parseInt)
-    .option('--filter [regexp]', 'set normal image filter.', parseRegexp)
-    .option('--retina-filter [regexp]', 'set retina image filter.', parseRegexp)
-    .option('--arrangement [arrange]', 'set arrangement of images. one of ["compact", "vertical", "horizontal"], defaults to "compact"',
-        /^(compact|vertical|horizontal)$/i, 'compact')
-    .option('--style-prefix [prefix]', 'set style className prefix, defaults to "icon"')
-    .option('--style-connector [connector]', 'set style className connector, defaults to "-"')
-    .option('--style-suffix [suffix]', 'set style className suffix, defaults to ""')
-    .option('--style-banner', 'enable style banner, defaults to false')
+    .option('-s, --source <glob|dir>', 'required, source icons, like "img/icons/*.png", "img/icons"')
+    .option('-o, --out-img <path>', 'required, sprite image path, like "img/sprite.png"')
+    .option('--out-style <path>', 'set style path, like "css/icons.css"')
+    .option('--out-retina <path>', 'set retina sprite image path. defaults to same with normal path and add "@2x" to filename')
     .option('--no-interlaced', 'disable png interlace')
-    .option('-R, --no-retina', 'disable retina mode.')
-    .option('--no-style', 'disable generate style');
+    .option('--no-retina', 'disable generate retina image')
+    .option('-c, --compression [level]', 'set png compression level. one of ["none", "fast", "high"], defaults to "high"',
+        /none|fast|high/, 'high')
+    .option('-m, --margin <number>', 'set margin between images. defaults to 0, prefer even number', parseInt)
+    .option('--filter <glob>', 'set normal image filter.')
+    .option('--retina-filter <glob>', 'set retina image filter.')
+    .option('--arrangement [type]', 'set arrangement of images. one of ["compact", "vertical", "horizontal"], defaults to "compact"',
+        /^(compact|vertical|horizontal)$/i, 'compact')
+    .option('--no-style', 'disable generate style')
+    .option('--style-prefix <prefix>', 'set style className prefix, defaults to "icon"')
+    .option('--style-connector <connector>', 'set style className connector, defaults to "-"')
+    .option('--style-suffix <suffix>', 'set style className suffix, defaults to ""')
+    .option('--style-banner', 'enable style banner, defaults to false')
 
 program.on('--help', () => {
-    console.log('  Examples:'.green);
-    console.log('');
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --output-retina img/sprite@2x.png --style-path css/sprite.css --compression high --margin 10'.grey);
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --no-retina --no-style'.grey);
-    console.log('    $ ysprite -s img/icons -o img/sprite.png --style-path sprite.less --style-prefix ico --style-connector __'.grey);
-    console.log('');
-    console.log('');
-    console.log(`  Author: ${pkg.author}`.rainbow);
-});
+    console.log('  Examples:'.green)
+    console.log('')
+    console.log('    $ ysprite -s img/icons -o img/sprite.png --out-retina img/sprite@2x.png --out-style css/sprite.css --compression high --margin 10'.grey)
+    console.log(`    $ ysprite -s 'icons/**/*.png' -o tmp/sprite.png --no-retina --no-style`.grey)
+    console.log('')
+    console.log('')
+    console.log(`  ★★★★★  created by ${pkg.author && pkg.author.name || 'yang'}  ★★★★★`.grey.bold)
+})
 
-program.parse(process.argv);
+program.parse(process.argv)
 
-const { retina, interlaced, margin, filter, retinaFilter, style, compression, output, outputRetina, source,
-    stylePath, styleBanner, stylePrefix, styleSuffix, styleConnector, arrangement } = program;
+const {
+    source, outImg, outRetina, outStyle,
+    retina, interlaced, margin, arrangement, compression,
+    filter, retinaFilter,
+    style, styleBanner, stylePrefix, styleSuffix, styleConnector
+} = program
 
 if (program.rawArgs.length === 2) {
-    console.log('');
-    console.log(`★★★★★  ysprite@v${pkg.version}  ★★★★★`.green);
-    console.log('');
-    exitCli();
-} else if (!source || !output || (!stylePath && style)) {
-    console.log('');
-    console.log('Options of (source, output, style-path) are all reuiqred.'.red);
-    console.log('');
-    console.log('Run [ysprite --help] for more info.'.grey);
-    console.log('');
-    exitCli();
+    console.log()
+    console.log(`  ★★★★★  ysprite@v${pkg.version}  ★★★★★`.green)
+    console.log()
+    exitCli()
+} else if (!verifyArgs()) {
+    console.log()
+    console.error('  error: options (source, out-img, out-style) are all reuiqred.'.red.bold)
+    console.log()
+    console.log('  run [ysprite --help] for more info.'.grey)
+    console.log()
+    exitCli(1)
 }
 
+function verifyArgs () {
+    if (!source || !outImg) return false
+    else if (!outStyle && style) return false
+
+    return true
+}
+
+const spinner = new Spinner()
 
 // set sprite options and style options
 const spriteOpts = {
+    imagePath: outImg,
+    retinaImagePath: outRetina,
     retina,
+    writeToFile: true,
     interlaced,
-    margin: typeof margin === 'number' ? margin : 0,
-    compression: typeof compression === 'string' ? compression : 'high',
-    dest: output,
-    retinaDest: outputRetina,
-    arrangement: typeof arrangement === 'string' ? arrangement : 'compact'
-};
+    margin: margin || 0,
+    compression: compression || 'high',
+    arrangement: arrangement || 'compact'
+}
 
 if (filter) {
-    spriteOpts.filter = (filename) => {
-        return filter.test(filename);
-    };
+    spriteOpts.filter = filename => minimatch(filename, filter)
 }
 if (retinaFilter) {
-    spriteOpts.retinaFilter = (filename) => {
-        return retinaFilter.test(filename);
-    };
+    spriteOpts.retinaFilter = filename => minimatch(filename, retinaFilter)
 }
 
-const styleOpts = {
-    stylePath,
-    imagePath: output,
-    retinaImagePath: outputRetina,
-    banner: !!styleBanner
-};
+const styleOpts = style ? {
+    imagePath: outImg,
+    retinaImagePath: outRetina,
+    retina,
+    writeToFile: true,
+    stylePath: outStyle,
+    banner: styleBanner,
+    prefix: stylePrefix,
+    connector: styleConnector,
+    suffix: styleSuffix
+} : null
 
 // start to sprite and style
-logOk('Start generate sprite.');
-generateSprite(source, spriteOpts).then((data) => {
-    let retinaPath = '';
-    if (data[1]) {
-        retinaPath = outputRetina ? outputRetina : isAbsolute(output) ? data[1].merged.path :
-            relative(process.cwd(), data[1].merged.path);
-        retinaPath = 'retina -> ' + retinaPath;
-    }
-    logOk(`Finish.  Sprite path: normal -> ${output}  ${retinaPath}`);
-    if (!style) return;
-
-    console.log('');
-    logOk('Start generate style.');
-    typeof stylePrefix === 'string' && (styleOpts.prefix = stylePrefix);
-    typeof styleConnector === 'string' && (styleOpts.connector = styleConnector);
-    typeof styleSuffix === 'string' && (styleOpts.suffix = styleSuffix);
-    return generateStyle(data[0].source, styleOpts);
-}, (err) => {
-    logErr('Failed generate sprite:');
-    console.error(err.stack ? err.stack : err);
-}).then((data) => {
-    data && logOk(`Finish.  Style path: ${stylePath}`);
-}, (err) => {
-    logErr('Failed generate style:');
-    console.error(err.stack ? err.stack : err);
-});
+spinner.start(' sprite...'.grey)
+ysprite(source, {
+    sprite: spriteOpts,
+    style: styleOpts
+}).then(res => {
+    spinner.stop()
+    console.log()
+    console.log('  Sprite successfully!'.green.bold)
+    const msg = [
+        '  image: '.grey.bold,
+        res.imagePath.grey,
+        '  retina: '.grey.bold,
+        (res.retinaImagePath || 'None').grey,
+        '  style: '.grey.bold,
+        (res.stylePath || 'None').grey
+    ]
+    console.log(`  ${msg.join('')}`)
+}).catch(err => {
+    spinner.stop()
+    console.log()
+    console.error('  Sorry, some error occurred.'.red.bold)
+    console.log()
+    console.error('  ' + err.toString().grey)
+})
